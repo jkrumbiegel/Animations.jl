@@ -1,0 +1,8 @@
+name = "Animations"
+uuid = "27a7e980-b3e6-11e9-2bcd-0b925532e340"
+authors = ["Julius Georg Krumbiegel <jkrumbiegel@oculus.com>"]
+version = "0.1.0"
+
+[deps]
+Observables = "510215fc-4207-5dde-b226-833fc4488ee2"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
