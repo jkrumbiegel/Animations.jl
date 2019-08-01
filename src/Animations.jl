@@ -2,7 +2,7 @@ module Animations
 
 import Observables
 
-export Easing, LinearEasing, SineEasing, Animation, Keyframe, add!, update!
+export Easing, LinearEasing, SineEasing, Animation, Keyframe, add!, update!, linear_interpolate
 
 abstract type Easing end
 
@@ -39,6 +39,11 @@ struct Animation{T}
 
         new{T}(obs, kfs, easings)
     end
+
+    function Animation(differenttype_kfs::Vector{Keyframe}, easings::Vector{Easing})
+        types = unique(map(x -> typeof(x), differenttype_kfs))
+        error("""All keyframes need the same parametric type. Types are:\n$types""")
+    end
 end
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 
@@ -67,17 +72,23 @@ end
 
 function validate_keyframe_times(kfs::Vector{Keyframe{T}}) where T
 
-    if length(kfs) <= 1
-        return
-    end
-    for (k1, k2) in zip(kfs[1:end-1], kfs[2:end])
-        if k2.t <= k1.t
-            error("Keyframes are not ordered correctly, t=$(k1.t) before t2=$(k2.t)")
+    if length(kfs) > 1
+        for (k1, k2) in zip(kfs[1:end-1], kfs[2:end])
+            if k2.t <= k1.t
+                error("Keyframes are not ordered correctly, t=$(k1.t) before t2=$(k2.t)")
+            end
         end
     end
+
+    for k in kfs
+        if isnan(k.t)
+            error("t is NaN")
+        end
+    end
+
 end
 
-function interpolate(kind::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
+function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
     if t <= k1.t
         return k1.value
     elseif t >= k2.t
@@ -85,19 +96,24 @@ function interpolate(kind::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) wh
     end
 
     time_fraction = (t - k1.t) / (k2.t - k1.t)
-    interp_strength = strength(kind, time_fraction)
-    interp_value = (k2.value .- k1.value) .* interp_strength .+ k1.value
+    interp_ratio = interpolation_ratio(easing, time_fraction)
+    interp_value = linear_interpolate(interp_ratio, k1.value, k2.value)
 end
 
-function strength(kind::SineEasing, fraction)
+# this should be overloaded for weird types
+function linear_interpolate(fraction::Real, value1::T, value2::T) where T
+    (value2 .- value1) .* fraction .+ value1
+end
+
+function interpolation_ratio(easing::SineEasing, fraction)
     return sin(pi * fraction - 0.5pi) * 0.5 + 0.5
 end
 
-function strength(kind::LinearEasing, fraction)
+function interpolation_ratio(easing::LinearEasing, fraction)
     return fraction
 end
 
-function strength(kind::StepEasing, fraction)
+function interpolation_ratio(easing::StepEasing, fraction)
     return fraction <= 0.5 ? 0 : 1
 end
 
