@@ -13,7 +13,7 @@ using Observables
         Easing[SineEasing(), SineEasing()]
     )
 
-    values = evaluate.(Ref(animation), [0, 1, 2, 3, 4, 5, 6])
+    values = evaluate.(animation, [0, 1, 2, 3, 4, 5, 6])
     println(values)
 end
 
@@ -23,7 +23,9 @@ end
 
     obs = Observable(0.0)
 
-    map(x -> println("x changed to $x"), obs)
+    on(obs) do x
+        println("x changed to $x")
+    end
 
     kf1 = Keyframe(1, 5.0)
     kf2 = Keyframe(3, 10.0)
@@ -36,6 +38,6 @@ end
 
     add!(a, obs, animation)
 
-    update.(Ref(a), [0, 1, 2, 3, 4, 5, 6])
+    update.(a, [0, 1, 2, 3, 4, 5, 6])
 
 end

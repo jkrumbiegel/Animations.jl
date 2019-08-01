@@ -34,10 +34,12 @@ struct Animation{T}
         new{T}(kfs, easings)
     end
 end
+Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 
 mutable struct Animator
     animations::IdDict{Observable, Animation}
 end
+Base.Broadcast.broadcastable(a::Animator) = Ref(a)
 
 Animator() = Animator(IdDict{Observable, Animation}())
 
