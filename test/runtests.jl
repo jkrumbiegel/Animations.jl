@@ -13,31 +13,25 @@ using Observables
         Easing[SineEasing(), SineEasing()]
     )
 
-    values = evaluate.(animation, [0, 1, 2, 3, 4, 5, 6])
-    println(values)
+    on(animation) do x
+        println(x)
+    end
+    update!.(animation, [0, 1, 2, 3, 4, 5, 6])
 end
 
-@testset "animator" begin
+@testset "vector interpolate" begin
 
-    a = Animator()
-
-    obs = Observable(0.0)
-
-    on(obs) do x
-        println("x changed to $x")
-    end
-
-    kf1 = Keyframe(1, 5.0)
-    kf2 = Keyframe(3, 10.0)
-    kf3 = Keyframe(5, 0.0)
+    kf1 = Keyframe(0, [0.0, 0.0, 0.0])
+    kf2 = Keyframe(1, [1.0, 2.0, 3.0])
 
     animation = Animation(
-        [kf1, kf2, kf3],
-        Easing[SineEasing(), SineEasing()]
+        [kf1, kf2],
+        Easing[SineEasing()]
     )
 
-    add!(a, obs, animation)
-
-    update.(a, [0, 1, 2, 3, 4, 5, 6])
+    on(animation) do x
+        println(x)
+    end
+    update!.(animation, [0, 0.25, 0.5, 0.75, 1])
 
 end

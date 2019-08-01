@@ -1,13 +1,14 @@
 module Animations
 
-using Observables: Observable
+import Observables
 
-export Easing, LinearEasing, SineEasing, Animator, Animation, Keyframe, evaluate, add!, update
+export Easing, LinearEasing, SineEasing, Animation, Keyframe, add!, update!
 
 abstract type Easing end
 
 struct LinearEasing <: Easing end
 struct SineEasing <: Easing end
+struct StepEasing <: Easing end
 
 struct Keyframe{T}
     t::Float64
@@ -17,10 +18,15 @@ end
 Keyframe(t::Real, value) = Keyframe(convert(Float64, t), value)
 
 struct Animation{T}
+    observable::Observables.Observable{T}
     frames::Vector{Keyframe{T}}
     easings::Vector{Easing}
 
     function Animation(kfs::Vector{Keyframe{T}}, easings::Vector{Easing}) where T
+
+        # create the observable from the first value
+        obs = Observables.Observable{T}(kfs[1].value)
+
         validate_keyframe_times(kfs)
 
         if length(kfs) - length(easings) != 1
@@ -31,40 +37,31 @@ struct Animation{T}
                 """)
         end
 
-        new{T}(kfs, easings)
+        new{T}(obs, kfs, easings)
     end
 end
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 
-mutable struct Animator
-    animations::IdDict{Observable, Animation}
-end
-Base.Broadcast.broadcastable(a::Animator) = Ref(a)
+Observables.on(f::Function, a::Animation) = Observables.on(f, a.observable)
+# Observables.map(a::Animation, f::Function) =
 
-Animator() = Animator(IdDict{Observable, Animation}())
+function update!(a::Animation, t::Real)
 
-function update(a::Animator, t::Real)
-    for (observable, animation) in a.animations
-        observable[] = evaluate(animation, t)
-    end
-end
-
-function add!(animator::Animator, obs::Observable, a::Animation)
-    animator.animations[obs] = a
-end
-
-function evaluate(a::Animation, t::Real)
-
+    # the first keyframe with a higher time is the second one of the two with
+    # t in between (except when t is before the first or after the last keyframe)
     i_first_after_t = findfirst(kf -> kf.t >= t, a.frames)
 
     if isnothing(i_first_after_t)
-        return a.frames[end].value
+        # t after last keyframe
+        a.observable[] = a.frames[end].value
     elseif i_first_after_t == 1
-        return a.frames[1].value
+        # t before first keyframe
+        a.observable[] = a.frames[1].value
     else
+        # t between two keyframes
         i_from = i_first_after_t - 1
         i_to = i_first_after_t
-        return interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
+        a.observable[] = interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
     end
 end
 
@@ -80,7 +77,7 @@ function validate_keyframe_times(kfs::Vector{Keyframe{T}}) where T
     end
 end
 
-function interpolate(kind::S, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where {S <: Easing, T}
+function interpolate(kind::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
     if t <= k1.t
         return k1.value
     elseif t >= k2.t
@@ -93,11 +90,15 @@ function interpolate(kind::S, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where {
 end
 
 function strength(kind::SineEasing, fraction)
-    return sin(0.5pi + pi * fraction) * 0.5 + 0.5
+    return sin(pi * fraction - 0.5pi) * 0.5 + 0.5
 end
 
 function strength(kind::LinearEasing, fraction)
     return fraction
+end
+
+function strength(kind::StepEasing, fraction)
+    return fraction <= 0.5 ? 0 : 1
 end
 
 end
