@@ -79,9 +79,25 @@ end
 
 @testset "from macro" begin
 
-    a = Animation(
+    animation = Animation(
         @timestamps(1, 2, :3, :5),
         [1, 2, 3, 4],
         [Easing(), Easing(), Easing()]
     )
+end
+
+@testset "yoyo repeat" begin
+
+    animation = Animation(
+        [0, 3],
+        [0.0, 1.0],
+        Easing(easing=LinearEasing(), ntimes=3, yoyo=true)
+    )
+
+    on(animation) do x
+        println(x)
+    end
+
+    update!.(animation, collect(0:0.25:3))
+
 end

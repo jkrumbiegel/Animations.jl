@@ -115,6 +115,38 @@ function validate_keyframe_times(kfs::Vector{Keyframe{T}}) where T
 
 end
 
+function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool)
+    # the 1 values should be reached, so no simple modulo
+    # that means there are no zeros after the first, but 1 at the end is more important
+
+    if time_fraction == 0
+        return 0
+    elseif time_fraction == 1
+        return 1
+    elseif time_fraction > 1 || time_fraction < 0
+        error("Time fraction is $time_fraction but should be from 0 to 1")
+    end
+
+    multiplied = time_fraction * n_repeats
+    multiples, rest = divrem(multiplied, 1)
+    nth_repeat = Int(multiples) + 1 # because 1st repeat is 0 for divrem
+
+    if yoyo
+        # 1: 0 to 1
+        # 2: 1 to 0
+        # 3: 0 to 1
+        # etc
+        if isodd(nth_repeat) # first up
+            return rest
+        else
+            return 1 - rest # then down
+        end
+    else
+        # this is different than standard modulo
+        return rest == 0 ? 1 : rest
+    end
+end
+
 function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
 
     time_fraction = (t - k1.t) / (k2.t - k1.t)
@@ -125,9 +157,11 @@ function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) 
         return k2.value
     end
 
-    repeated_time_fraction = mod(time_fraction * easing.ntimes + 1, easing.ntimes)
+    # handle repetitions
+    # on the previous interval of 0 to 1 there are now n 0 to 1 intervals
+    interp_fraction = fraction_to_repeated(time_fraction, easing.ntimes, easing.yoyo)
 
-    interp_ratio = interpolation_ratio(easing.easing, repeated_time_fraction)
+    interp_ratio = interpolation_ratio(easing.easing, interp_fraction)
 
     # these checks enable to return early if values are 0 or 1, which is why
     # NoEasing EasingType can be used for non-interpolateable values like strings
@@ -142,6 +176,11 @@ end
 
 # this should be overloaded for weird types
 function linear_interpolate(fraction::Real, value1::T, value2::T) where T
+    (value2 - value1) * fraction + value1
+end
+
+# array version with broadcasting
+function linear_interpolate(fraction::Real, value1::T, value2::T) where T <: AbstractArray
     (value2 .- value1) .* fraction .+ value1
 end
 
