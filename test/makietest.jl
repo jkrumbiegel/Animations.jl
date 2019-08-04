@@ -64,6 +64,12 @@ function test()
         Easing(easing=LinearEasing())
     )
 
+    text_animation = Animations.Animation(
+        [0, 1, 2, 3],
+        ["stuff without", "interpolation works", "also with", "discrete steps"],
+        Easing()
+    )
+
     width = length(animations) - 1
 
     scene = Scene(resolution=(600, 600))
@@ -77,9 +83,12 @@ function test()
     timestamp = Node("0")
     text!(scene, timestamp, position=Point2f0(width / 2, 1.2), align = (:center,  :center), textsize = 0.4)
 
+    text!(scene, text_animation.obs, position=Point2f0(width / 2, 0.5), align = (:center,  :center), textsize = 0.4)
+
     record(scene, "test.gif", -1:1/25:4; framerate=25) do t
         Animations.update!.(animations, t)
         Animations.update!(color_animation, t)
+        Animations.update!(text_animation, t)
         timestamp[] = @sprintf "t = %.2f" t
     end
     nothing
