@@ -2,22 +2,22 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineEasing, Step, Animation, Keyframe, add!, update!, linear_interpolate
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
 
 #TODO yoyo, repeats, all that good stuff
 struct LinearEasing <: EasingType end
-struct SineEasing <: EasingType end
-struct Step <: EasingType end
+struct SineIOEasing <: EasingType end
+struct NoEasing <: EasingType end
 
-struct Easing
-    type::Type{<:EasingType}
-    yoyo::Bool
+struct Easing{T}
+    easing::T
     ntimes::Int
+    yoyo::Bool
 end
 
-Easing(;type=Step(), yoyo=false, ntimes=1) = Easing(type, yoyo, ntimes)
+Easing(;easing=NoEasing(), ntimes=1, yoyo=false) = Easing(easing, ntimes, yoyo)
 
 struct Keyframe{T}
     t::Float64
@@ -29,9 +29,9 @@ Keyframe(t::Real, value) = Keyframe(convert(Float64, t), value)
 struct Animation{T}
     obs::Observables.Observable{T}
     frames::Vector{Keyframe{T}}
-    easings::Vector{Easing}
+    easings::Vector{<:Easing}
 
-    function Animation(kfs::Vector{Keyframe{T}}, easings::Vector{Easing}) where T
+    function Animation(kfs::Vector{Keyframe{T}}, easings::Vector{<:Easing}) where T
 
         # create the observable from the first value
         obs = Observables.Observable{T}(kfs[1].value)
@@ -58,8 +58,19 @@ struct Animation{T}
         if length(kfs) <= 1
             error("There must be at least two keyframes.")
         end
-        Animation(kfs, [easing for _ in 1:length(kfs) - 1])
+        Animation(kfs, Easing[easing for _ in 1:length(kfs) - 1])
     end
+
+    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easings::Vector{<:Easing}) where T
+        keyframes = Keyframe{T}.(timestamps, values)
+        Animation(keyframes, easings)
+    end
+
+    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easing::Easing) where T
+        Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
+    end
+
+
 end
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 
@@ -116,13 +127,13 @@ function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) 
 
     repeated_time_fraction = mod(time_fraction * easing.ntimes + 1, easing.ntimes)
 
-    interp_ratio = interpolation_ratio(easing.type, repeated_time_fraction)
+    interp_ratio = interpolation_ratio(easing.easing, repeated_time_fraction)
 
     # these checks enable to return early if values are 0 or 1, which is why
-    # step EasingType can be used for non-interpolateable values like strings
-    if interp_ratio <= 0
+    # NoEasing EasingType can be used for non-interpolateable values like strings
+    if interp_ratio == 0
         return k1.value
-    elseif interp_ratio >= 1
+    elseif interp_ratio == 1
         return k2.value
     end
 
@@ -134,18 +145,44 @@ function linear_interpolate(fraction::Real, value1::T, value2::T) where T
     (value2 .- value1) .* fraction .+ value1
 end
 
-function interpolation_ratio(::Type{SineEasing}, fraction)
+function interpolation_ratio(easing::SineIOEasing, fraction)
     return sin(pi * fraction - 0.5pi) * 0.5 + 0.5
 end
 
-function interpolation_ratio(::Type{LinearEasing}, fraction)
+function interpolation_ratio(easing::LinearEasing, fraction)
     return fraction
 end
 
-function interpolation_ratio(::Type{Step}, fraction)
+function interpolation_ratio(easing::NoEasing, fraction)
     return fraction < 0.5 ? 0 : 1
 end
 
+macro timestamps(args...)
+
+    ts = Float64[args[1]]
+
+    if length(args) > 1
+        for a in args[2:end]
+            if typeof(a) <: QuoteNode
+                if isreal(a.value)
+                    if a.value <= 0
+                        error("Relative timestamp must be larger than 0, but is $(a.value)")
+                    end
+                    push!(ts, ts[end] + a.value)
+                else
+                    error("$(a.value) is not a number")
+                end
+            elseif typeof(a) <: Real
+                if a <= ts[end]
+                    error("$a is smaller than the previous timestamp $(ts[end])")
+                end
+                push!(ts, a)
+            else
+                error("$(a) is not a valid timestamp")
+            end
+        end
+    end
+    :($ts)
 end
 
-# dump(:(1, 2, 3, 4, :5, 5r))
+end

@@ -11,7 +11,7 @@ using Colors: Color, RGB, weighted_color_mean
 
     animation = Animation(
         [kf1, kf2, kf3],
-        [Easing(type=SineEasing), Easing(type=LinearEasing)]
+        [Easing(easing=SineIOEasing()), Easing(easing=LinearEasing())]
     )
 
     on(animation) do x
@@ -27,7 +27,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(type=SineEasing)
+        Easing(easing=SineIOEasing())
     )
 
     on(animation) do x
@@ -44,7 +44,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(type=SineEasing)
+        Easing(easing=SineIOEasing())
     )
 
     on(animation) do x
@@ -52,7 +52,7 @@ end
     end
 
     # add correct linear interpolation method
-    Animations.linear_interpolate(fraction::Real, c1::Color, c2::Color) = weighted_color_mean(fraction, c1, c2)
+    Animations.linear_interpolate(fraction::Real, c1::Color, c2::Color) = weighted_color_mean(1 - fraction, c1, c2)
 
     update!.(animation, [0, 0.25, 0.5, 0.75, 1])
 
@@ -66,7 +66,7 @@ end
 
     animation = Animation(
         [kf1, kf2, kf3],
-        Easing(type=Step)
+        Easing(easing=NoEasing())
     )
 
     on(animation) do x
@@ -75,4 +75,13 @@ end
 
     update!.(animation, [0, 0.5, 1, 1.5, 2])
 
+end
+
+@testset "from macro" begin
+
+    a = Animation(
+        @timestamps(1, 2, :3, :5),
+        [1, 2, 3, 4],
+        [Easing(), Easing(), Easing()]
+    )
 end
