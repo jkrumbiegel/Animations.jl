@@ -2,7 +2,7 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
 
@@ -10,14 +10,17 @@ abstract type EasingType end
 struct LinearEasing <: EasingType end
 struct SineIOEasing <: EasingType end
 struct NoEasing <: EasingType end
+struct StepEasing <: EasingType end
 
 struct Easing{T}
     easing::T
     ntimes::Int
     yoyo::Bool
+    prewait::Float64
+    postwait::Float64
 end
 
-Easing(;easing=NoEasing(), ntimes=1, yoyo=false) = Easing(easing, ntimes, yoyo)
+Easing(;easing=NoEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, ntimes, yoyo, prewait, postwait)
 
 struct Keyframe{T}
     t::Float64
@@ -115,7 +118,7 @@ function validate_keyframe_times(kfs::Vector{Keyframe{T}}) where T
 
 end
 
-function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool)
+function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool, prewait, postwait)
     # the 1 values should be reached, so no simple modulo
     # that means there are no zeros after the first, but 1 at the end is more important
 
@@ -127,9 +130,22 @@ function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool)
         error("Time fraction is $time_fraction but should be from 0 to 1")
     end
 
+    if !(0 <= prewait < 1)
+        error("Pre-wait fraction $prewait is invalid")
+    end
+    if !(0 <= postwait < 1)
+        error("Post-wait fraction $postwait is invalid")
+    end
+    if postwait + prewait >= 1
+        error("Pre-wait is $prewait and post-wait is $postwait, together larger or equal to 1.")
+    end
+
     multiplied = time_fraction * n_repeats
     multiples, rest = divrem(multiplied, 1)
     nth_repeat = Int(multiples) + 1 # because 1st repeat is 0 for divrem
+
+    # this causes the value to be 0 for the prewait interval and 1 for the postwait interval
+    repeat_fraction = clamp((rest - prewait) / ((1 - postwait) - prewait), 0, 1)
 
     if yoyo
         # 1: 0 to 1
@@ -137,13 +153,13 @@ function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool)
         # 3: 0 to 1
         # etc
         if isodd(nth_repeat) # first up
-            return rest
+            return repeat_fraction
         else
-            return 1 - rest # then down
+            return 1 - repeat_fraction # then down
         end
     else
         # this is different than standard modulo
-        return rest == 0 ? 1 : rest
+        return rest == 0 ? 1 : repeat_fraction
     end
 end
 
@@ -159,7 +175,7 @@ function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) 
 
     # handle repetitions
     # on the previous interval of 0 to 1 there are now n 0 to 1 intervals
-    interp_fraction = fraction_to_repeated(time_fraction, easing.ntimes, easing.yoyo)
+    interp_fraction = fraction_to_repeated(time_fraction, easing.ntimes, easing.yoyo, easing.prewait, easing.postwait)
 
     interp_ratio = interpolation_ratio(easing.easing, interp_fraction)
 
@@ -192,8 +208,12 @@ function interpolation_ratio(easing::LinearEasing, fraction)
     return fraction
 end
 
-function interpolation_ratio(easing::NoEasing, fraction)
+function interpolation_ratio(easing::StepEasing, fraction)
     return fraction < 0.5 ? 0 : 1
+end
+
+function interpolation_ratio(easing::NoEasing, fraction)
+    return fraction == 1 ? 1 : 0
 end
 
 macro timestamps(args...)
