@@ -209,3 +209,25 @@ function test5()
 end
 
 test5()
+
+function test6()
+
+    e1 = Easing(easing=PolyInEasing(4.0), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
+    e2 = Easing(easing=SineIOEasing(), ntimes=3, yoyo=true)
+
+    a = Animations.Animation(
+        [0, 2],
+        [[0. 0.], [0. 1.]],
+        Easing(easing=MultipliedEasing(e1, e2))
+    )
+
+    scene = Scene(resolution=(600, 600))
+    scatter!(scene, a.obs, markersize=0.2)
+
+    record(scene, "test6.gif", -0.5:1/25:2.5; framerate=25) do t
+        Animations.update!(a, t)
+    end
+
+end
+
+test6()

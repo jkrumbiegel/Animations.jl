@@ -2,7 +2,7 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, CompressedExpEasing,
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, CompressedExpEasing, EasedEasing, PolyInEasing
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
@@ -27,6 +27,9 @@ struct SineIOEasing <: EasingType end
 struct NoEasing <: EasingType end
 struct StepEasing <: EasingType end
 
+"""
+Mixes two easings with a constant ratio r, so that final = e1 * r + e2 * (1 - r)
+"""
 struct MixedEasing{S <: Easing, T <: Easing} <: EasingType
     e1::S
     e2::T
@@ -40,9 +43,33 @@ struct MixedEasing{S <: Easing, T <: Easing} <: EasingType
     end
 end
 
+"""
+Multiplies two easings with each other, so final = e1 * e2
+"""
 struct MultipliedEasing{S <: Easing, T <: Easing} <: EasingType
     e1::S
     e2::T
+end
+
+"""
+Mixes two easings with a factor decided with a third easing, so that
+final = (1 - easing()) * e1 + easing() * e2
+"""
+struct EasedEasing{S <: Easing, T <: Easing, U <: Easing} <: EasingType
+    e1::S
+    e2::T
+    easing::U
+
+    function EasedEasing(e1, e2, easing=Easing(easing=LinearEasing()))
+        new{typeof(e1), typeof(e2), typeof(easing)}(e1, e2, easing)
+    end
+end
+
+"""
+Polynomial in easing, so 2 is quad in, 3 is cubic in, etc
+"""
+struct PolyInEasing <: EasingType
+    power::Float64
 end
 
 struct CompressedExpEasing <: EasingType
@@ -243,23 +270,23 @@ function linear_interpolate(fraction::Real, value1::T, value2::T) where T <: Abs
 end
 
 function interpolation_ratio(easing::SineIOEasing, fraction)
-    return sin(pi * fraction - 0.5pi) * 0.5 + 0.5
+    sin(pi * fraction - 0.5pi) * 0.5 + 0.5
 end
 
 function interpolation_ratio(easing::LinearEasing, fraction)
-    return fraction
+    fraction
 end
 
 function interpolation_ratio(easing::StepEasing, fraction)
-    return fraction < 0.5 ? 0 : 1
+    fraction < 0.5 ? 0 : 1
 end
 
 function interpolation_ratio(easing::NoEasing, fraction)
-    return fraction == 1 ? 1 : 0
+    fraction == 1 ? 1 : 0
 end
 
 function interpolation_ratio(easing::CompressedExpEasing, fraction)
-    return (1 - exp(-(fraction * easing._scaler99 ^ easing.compression))) / 0.95
+    (1 - exp(-(fraction * easing._scaler99 ^ easing.compression))) / 0.95
 end
 
 function interpolation_ratio(easing::MixedEasing, fraction)
@@ -267,7 +294,7 @@ function interpolation_ratio(easing::MixedEasing, fraction)
     e2 = easing.e2
     interp_fraction1 = fraction_to_repeated(fraction, e1.ntimes, e1.yoyo, e1.prewait, e1.postwait)
     interp_fraction2 = fraction_to_repeated(fraction, e2.ntimes, e2.yoyo, e2.prewait, e2.postwait)
-    return interpolation_ratio(easing.e1.easing, interp_fraction1) * easing.mix + interpolation_ratio(easing.e2.easing, interp_fraction2) * (1 - easing.mix)
+    interpolation_ratio(easing.e1.easing, interp_fraction1) * easing.mix + interpolation_ratio(easing.e2.easing, interp_fraction2) * (1 - easing.mix)
 end
 
 function interpolation_ratio(easing::MultipliedEasing, fraction)
@@ -275,7 +302,22 @@ function interpolation_ratio(easing::MultipliedEasing, fraction)
     e2 = easing.e2
     interp_fraction1 = fraction_to_repeated(fraction, e1.ntimes, e1.yoyo, e1.prewait, e1.postwait)
     interp_fraction2 = fraction_to_repeated(fraction, e2.ntimes, e2.yoyo, e2.prewait, e2.postwait)
-    return interpolation_ratio(easing.e1.easing, interp_fraction1) * interpolation_ratio(easing.e2.easing, interp_fraction2)
+    interpolation_ratio(easing.e1.easing, interp_fraction1) * interpolation_ratio(easing.e2.easing, interp_fraction2)
+end
+
+function interpolation_ratio(easing::EasedEasing, fraction)
+    e1 = easing.e1
+    e2 = easing.e2
+    ease = easing.easing
+    interp_fraction1 = fraction_to_repeated(fraction, e1.ntimes, e1.yoyo, e1.prewait, e1.postwait)
+    interp_fraction2 = fraction_to_repeated(fraction, e2.ntimes, e2.yoyo, e2.prewait, e2.postwait)
+    interp_fraction_ease = fraction_to_repeated(fraction, ease.ntimes, ease.yoyo, ease.prewait, ease.postwait)
+    final = interpolation_ratio(easing.e1.easing, interp_fraction1) * (1 - interp_fraction_ease) +
+            interpolation_ratio(easing.e2.easing, interp_fraction2) * interp_fraction_ease
+end
+
+function interpolation_ratio(easing::PolyInEasing, fraction)
+    fraction ^ easing.power
 end
 
 macro timestamps(args...)
