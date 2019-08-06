@@ -2,22 +2,61 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, CompressedExpEasing,
+    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
 
-#TODO yoyo, repeats, all that good stuff
-struct LinearEasing <: EasingType end
-struct SineIOEasing <: EasingType end
-struct NoEasing <: EasingType end
-struct StepEasing <: EasingType end
-
-struct Easing{T}
+struct Easing{T <: EasingType}
     easing::T
     ntimes::Int
     yoyo::Bool
     prewait::Float64
     postwait::Float64
+
+    function Easing(easing, ntimes, yoyo, prewait, postwait)
+        if yoyo && iseven(ntimes)
+            error("Yoyo works only with odd numbers of repetitions, it has to reach 1 at the end.")
+        end
+        new{typeof(easing)}(easing, ntimes, yoyo, prewait, postwait)
+    end
+end
+
+struct LinearEasing <: EasingType end
+struct SineIOEasing <: EasingType end
+struct NoEasing <: EasingType end
+struct StepEasing <: EasingType end
+
+struct MixedEasing{S <: Easing, T <: Easing} <: EasingType
+    e1::S
+    e2::T
+    mix::Float64
+
+    function MixedEasing(e1::S, e2::T, mix::Float64=0.5) where {S <: Easing, T <: Easing}
+        if !(0 <= mix <= 1)
+            error("Mix has to be between 0 and 1, but is $mix")
+        end
+        new{S, T}(e1, e2, mix)
+    end
+end
+
+struct MultipliedEasing{S <: Easing, T <: Easing} <: EasingType
+    e1::S
+    e2::T
+end
+
+struct CompressedExpEasing <: EasingType
+    compression::Float64
+    _scaler99::Float64
+
+    function CompressedExpEasing(compression::Float64)
+        # compexp(t, comp) = 1 - exp(-(t ^ comp))
+        # 0.99 = 1 - exp(-t ^ comp)
+        # exp(-(t ^ comp)) = 0.01
+        # (t ^ comp) = -log(0.01)
+        t_99 = (-log(1 - 0.95)) ^ (1/compression)
+        new(compression, t_99)
+    end
 end
 
 Easing(;easing=NoEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, ntimes, yoyo, prewait, postwait)
@@ -165,6 +204,7 @@ end
 
 function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
 
+    # the fraction of the keyframe interval we're at
     time_fraction = (t - k1.t) / (k2.t - k1.t)
 
     if time_fraction <= 0
@@ -175,8 +215,10 @@ function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) 
 
     # handle repetitions
     # on the previous interval of 0 to 1 there are now n 0 to 1 intervals
+    # this is the interval from 0 to 1 on which the easing function will be applied
     interp_fraction = fraction_to_repeated(time_fraction, easing.ntimes, easing.yoyo, easing.prewait, easing.postwait)
 
+    # this is the actual ratio of the two keyframe values that comes out of the esas
     interp_ratio = interpolation_ratio(easing.easing, interp_fraction)
 
     # these checks enable to return early if values are 0 or 1, which is why
@@ -214,6 +256,26 @@ end
 
 function interpolation_ratio(easing::NoEasing, fraction)
     return fraction == 1 ? 1 : 0
+end
+
+function interpolation_ratio(easing::CompressedExpEasing, fraction)
+    return (1 - exp(-(fraction * easing._scaler99 ^ easing.compression))) / 0.95
+end
+
+function interpolation_ratio(easing::MixedEasing, fraction)
+    e1 = easing.e1
+    e2 = easing.e2
+    interp_fraction1 = fraction_to_repeated(fraction, e1.ntimes, e1.yoyo, e1.prewait, e1.postwait)
+    interp_fraction2 = fraction_to_repeated(fraction, e2.ntimes, e2.yoyo, e2.prewait, e2.postwait)
+    return interpolation_ratio(easing.e1.easing, interp_fraction1) * easing.mix + interpolation_ratio(easing.e2.easing, interp_fraction2) * (1 - easing.mix)
+end
+
+function interpolation_ratio(easing::MultipliedEasing, fraction)
+    e1 = easing.e1
+    e2 = easing.e2
+    interp_fraction1 = fraction_to_repeated(fraction, e1.ntimes, e1.yoyo, e1.prewait, e1.postwait)
+    interp_fraction2 = fraction_to_repeated(fraction, e2.ntimes, e2.yoyo, e2.prewait, e2.postwait)
+    return interpolation_ratio(easing.e1.easing, interp_fraction1) * interpolation_ratio(easing.e2.easing, interp_fraction2)
 end
 
 macro timestamps(args...)
