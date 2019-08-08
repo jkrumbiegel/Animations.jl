@@ -2,7 +2,7 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing,
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
@@ -69,6 +69,10 @@ end
 Polynomial in easing, so 2 is quad in, 3 is cubic in, etc
 """
 struct PolyInEasing <: EasingType
+    power::Float64
+end
+
+struct PolyOutEasing <: EasingType
     power::Float64
 end
 
@@ -315,6 +319,10 @@ end
 
 function interpolation_ratio(easing::PolyInEasing, fraction)
     fraction ^ easing.power
+end
+
+function interpolation_ratio(easing::PolyOutEasing, fraction)
+    1 - ((1 - fraction) ^ easing.power)
 end
 
 macro timestamps(args...)

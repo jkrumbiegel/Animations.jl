@@ -252,3 +252,23 @@ function test7()
 end
 
 test7()
+
+
+function test8()
+
+    animation = Animations.Animation(
+        [0, 1, 2, 3],
+        Point2{Float64}[(0, 0), (1, 0), (0.5, 0.666), (0, 0)],
+        Easing(PolyOutEasing(2), postwait=0.33)
+    )
+
+    scene = Scene(resolution=(600, 600))
+    scatter!(scene, lift(x -> [x], animation.obs), markersize=0.2)
+
+    record(scene, "test8.gif", 0:1/25:3; framerate=25) do t
+        Animations.update!(animation, t)
+    end
+
+end
+
+test8()
