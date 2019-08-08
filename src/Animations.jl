@@ -82,7 +82,7 @@ struct ExpInEasing <: EasingType
     end
 end
 
-Easing(easing=NoEasing(); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
+Easing(easing=LinearEasing(); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
 
 struct Keyframe{T}
     t::Float64
