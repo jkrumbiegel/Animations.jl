@@ -15,55 +15,55 @@ function test()
     push!(animations, Animations.Animation(
         [0, 3],
         [[0. 0.], [0. 1.]],
-        Easing(easing=LinearEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
+        Easing(LinearEasing(), n=1, yoyo=false, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[1. 0.], [1. 1.]],
-        Easing(easing=NoEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
+        Easing(NoEasing(), n=1, yoyo=false, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[2. 0.], [2. 1.]],
-        Easing(easing=StepEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
+        Easing(StepEasing(), n=1, yoyo=false, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[3. 0.], [3. 1.]],
-        Easing(easing=SineIOEasing(), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
+        Easing(SineIOEasing(), n=1, yoyo=false, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[4. 0.], [4. 1.]],
-        Easing(easing=SineIOEasing(), ntimes=3, yoyo=false, prewait=0.0, postwait=0.0)
+        Easing(SineIOEasing(), n=3, yoyo=false, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[5. 0.], [5. 1.]],
-        Easing(easing=SineIOEasing(), ntimes=3, yoyo=false, prewait=0.2, postwait=0.2)
+        Easing(SineIOEasing(), n=3, yoyo=false, prewait=0.2, postwait=0.2)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[6. 0.], [6. 1.]],
-        Easing(easing=SineIOEasing(), ntimes=3, yoyo=true, prewait=0.0, postwait=0.0)
+        Easing(SineIOEasing(), n=3, yoyo=true, prewait=0.0, postwait=0.0)
     ))
 
     push!(animations, Animations.Animation(
         [0, 3],
         [[7. 0.], [7. 1.]],
-        Easing(easing=SineIOEasing(), ntimes=3, yoyo=true, prewait=0.2, postwait=0.2)
+        Easing(SineIOEasing(), n=3, yoyo=true, prewait=0.2, postwait=0.2)
     ))
 
     color_animation = Animations.Animation(
         [0, 3],
         [LCHab(70, 70, 0), LCHab(70, 70, 360)],
-        Easing(easing=LinearEasing())
+        Easing(LinearEasing())
     )
 
     text_animation = Animations.Animation(
@@ -101,13 +101,13 @@ test()
 
 function test2()
 
-    e1 = Easing(easing=LinearEasing(), ntimes=11, yoyo=true, prewait=0.0, postwait=0.0)
-    e2 = Easing(easing=SineIOEasing())
+    e1 = Easing(LinearEasing(), n=11, yoyo=true, prewait=0.0, postwait=0.0)
+    e2 = Easing(SineIOEasing())
 
     a = Animations.Animation(
         [0, 3],
         [[0. 0.], [0. 1.]],
-        Easing(easing=MixedEasing(e1, e2, 0.5))
+        Easing(MixedEasing(e1, e2, 0.5))
     )
 
     scene = Scene(resolution=(600, 600))
@@ -123,13 +123,13 @@ test2()
 
 function test3()
 
-    e1 = Easing(easing=LinearEasing(), ntimes=5, yoyo=true, prewait=0.0, postwait=0.0)
-    e2 = Easing(easing=LinearEasing())
+    e1 = Easing(LinearEasing(), n=5, yoyo=true, prewait=0.0, postwait=0.0)
+    e2 = Easing(LinearEasing())
 
     a = Animations.Animation(
         [0, 3],
         [[0. 0.], [0. 1.]],
-        Easing(easing=MultipliedEasing(e1, e2))
+        Easing(MultipliedEasing(e1, e2))
     )
 
     scene = Scene(resolution=(600, 600))
@@ -148,13 +148,13 @@ function test4()
     ax = Animations.Animation(
         [0, 3],
         [0.0, 1.0],
-        Easing(easing=LinearEasing())
+        Easing(LinearEasing())
     )
 
     ay = Animations.Animation(
         [0, 3],
         [0.0, 1.0],
-        Easing(easing=SineIOEasing(), ntimes=5, yoyo=true)
+        Easing(SineIOEasing(), n=5, yoyo=true)
     )
 
     p = lift((x, y) -> [x y], ax.obs, ay.obs)
@@ -179,19 +179,19 @@ function test5()
     push!(animations, Animations.Animation(
         [0, 1],
         [[0. 0.], [0. 1.]],
-        Easing(easing=CompressedExpEasing(0.1))
+        Easing(CompressedExpEasing(0.1))
     ))
 
     push!(animations, Animations.Animation(
         [0, 1],
         [[1. 0.], [1. 1.]],
-        Easing(easing=CompressedExpEasing(1.0))
+        Easing(CompressedExpEasing(1.0))
     ))
 
     push!(animations, Animations.Animation(
         [0, 1],
         [[2. 0.], [2. 1.]],
-        Easing(easing=CompressedExpEasing(10.0))
+        Easing(CompressedExpEasing(10.0))
     ))
 
     width = length(animations) - 1
@@ -214,13 +214,13 @@ test5()
 
 function test6()
 
-    e1 = Easing(easing=PolyInEasing(4.0), ntimes=1, yoyo=false, prewait=0.0, postwait=0.0)
-    e2 = Easing(easing=SineIOEasing(), ntimes=3, yoyo=true)
+    e1 = Easing(PolyInEasing(4.0), n=1, yoyo=false, prewait=0.0, postwait=0.0)
+    e2 = Easing(SineIOEasing(), n=3, yoyo=true)
 
     a = Animations.Animation(
         [0, 2],
         [[0. 0.], [0. 1.]],
-        Easing(easing=MultipliedEasing(e1, e2))
+        Easing(MultipliedEasing(e1, e2))
     )
 
     scene = Scene(resolution=(600, 600))
@@ -239,7 +239,7 @@ function test7()
     animations = Animations.Animation.(
         Ref([0, 0.5]),
         [[[i 0.], [i 1.]] for i in 1:5],
-        (Easing(easing=ExpInEasing(i)) for i in [0.1, 0.5, 1.1, 2, 5])
+        (Easing(ExpInEasing(i)) for i in [0.1, 0.5, 1.1, 2, 5])
     )
 
     scene = Scene(resolution=(600, 600))
