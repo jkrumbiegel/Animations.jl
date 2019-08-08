@@ -1,3 +1,5 @@
+using Pkg
+pkg"activate ."
 using Revise
 using Makie
 using Animations
@@ -231,3 +233,22 @@ function test6()
 end
 
 test6()
+
+function test7()
+
+    animations = Animations.Animation.(
+        Ref([0, 0.5]),
+        [[[i 0.], [i 1.]] for i in 1:5],
+        (Easing(easing=ExpInEasing(i)) for i in [0.1, 0.5, 1.1, 2, 5])
+    )
+
+    scene = Scene(resolution=(600, 600))
+    scatter!.(scene, (a.obs for a in animations), markersize=0.2)
+
+    record(scene, "test7.gif", -0.5:1/25:1.5; framerate=25) do t
+        Animations.update!.(animations, t)
+    end
+
+end
+
+test7()

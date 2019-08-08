@@ -2,7 +2,7 @@ module Animations
 
 import Observables
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, CompressedExpEasing, EasedEasing, PolyInEasing
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
 
 abstract type EasingType end
@@ -72,17 +72,13 @@ struct PolyInEasing <: EasingType
     power::Float64
 end
 
-struct CompressedExpEasing <: EasingType
-    compression::Float64
-    _scaler99::Float64
-
-    function CompressedExpEasing(compression::Float64)
-        # compexp(t, comp) = 1 - exp(-(t ^ comp))
-        # 0.99 = 1 - exp(-t ^ comp)
-        # exp(-(t ^ comp)) = 0.01
-        # (t ^ comp) = -log(0.01)
-        t_99 = (-log(1 - 0.95)) ^ (1/compression)
-        new(compression, t_99)
+struct ExpInEasing <: EasingType
+    exponent::Float64
+    function ExpInEasing(exp)
+        if exp == 1
+            error("Exponent base can't be 1.")
+        end
+        new(exp)
     end
 end
 
@@ -142,6 +138,7 @@ struct Animation{T}
 
 end
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
+Base.Broadcast.broadcastable(e::Easing) = Ref(e)
 
 Observables.on(f::Function, a::Animation) = Observables.on(f, a.obs)
 # Observables.map(a::Animation, f::Function) =
@@ -285,8 +282,10 @@ function interpolation_ratio(easing::NoEasing, fraction)
     fraction == 1 ? 1 : 0
 end
 
-function interpolation_ratio(easing::CompressedExpEasing, fraction)
-    (1 - exp(-(fraction * easing._scaler99 ^ easing.compression))) / 0.95
+function interpolation_ratio(easing::ExpInEasing, fraction)
+    result = ((easing.exponent ^ fraction) - 1) / (easing.exponent - 1) # scale to 1
+    println(fraction, result)
+    result
 end
 
 function interpolation_ratio(easing::MixedEasing, fraction)
