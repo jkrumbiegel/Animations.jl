@@ -4,7 +4,7 @@ import Observables
 import Colors
 
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
-    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
+    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, value, @timestamps
 
 abstract type EasingType end
 
@@ -357,5 +357,7 @@ macro timestamps(args...)
     end
     :($ts)
 end
+
+value(a::Animation) = a.obs[]
 
 end
