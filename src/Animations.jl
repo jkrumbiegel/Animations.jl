@@ -167,6 +167,10 @@ function at(a::Animation, t::Real)
     end
 end
 
+function (a::Animation)(t::Real)
+    at(a, t)
+end
+
 function update!(a::Animation, t::Real)
     a.obs[] = at(a, t)
 end

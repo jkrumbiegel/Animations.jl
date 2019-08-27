@@ -101,3 +101,15 @@ end
     update!.(animation, collect(0:0.25:3))
 
 end
+
+@testset "call" begin
+
+    animation = Animation(
+        [0, 3],
+        [0.0, 1.0],
+        Easing(LinearEasing())
+    )
+
+    println(animation(1.5))
+
+end
