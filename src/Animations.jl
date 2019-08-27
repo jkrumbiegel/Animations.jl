@@ -1,6 +1,7 @@
 module Animations
 
 import Observables
+import Colors
 
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, @timestamps
@@ -266,8 +267,12 @@ function linear_interpolate(fraction::Real, value1::T, value2::T) where T
 end
 
 # array version with broadcasting
-function linear_interpolate(fraction::Real, value1::T, value2::T) where T <: AbstractArray
-    (value2 .- value1) .* fraction .+ value1
+function linear_interpolate(fraction::Real, array1::T, array2::T) where T <: AbstractArray
+    linear_interpolate.(fraction, array1, array2)
+end
+
+function linear_interpolate(fraction::Real, c1::T, c2::T) where T <: Colors.Colorant
+    weighted_color_mean(1 - fraction, c1, c2)
 end
 
 function interpolation_ratio(easing::SineIOEasing, fraction)

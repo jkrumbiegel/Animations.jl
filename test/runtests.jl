@@ -11,7 +11,7 @@ using Colors: Color, RGB, weighted_color_mean
 
     animation = Animation(
         [kf1, kf2, kf3],
-        [Easing(easing=SineIOEasing()), Easing(easing=LinearEasing())]
+        [Easing(SineIOEasing()), Easing(LinearEasing())]
     )
 
     on(animation) do x
@@ -27,7 +27,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(easing=SineIOEasing())
+        Easing(SineIOEasing())
     )
 
     on(animation) do x
@@ -44,7 +44,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(easing=SineIOEasing())
+        Easing(SineIOEasing())
     )
 
     on(animation) do x
@@ -66,7 +66,7 @@ end
 
     animation = Animation(
         [kf1, kf2, kf3],
-        Easing(easing=NoEasing())
+        Easing(NoEasing())
     )
 
     on(animation) do x
@@ -91,7 +91,7 @@ end
     animation = Animation(
         [0, 3],
         [0.0, 1.0],
-        Easing(easing=LinearEasing(), ntimes=3, yoyo=true)
+        Easing(LinearEasing(), n=3, yoyo=true)
     )
 
     on(animation) do x
