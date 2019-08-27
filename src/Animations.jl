@@ -4,7 +4,7 @@ import Observables
 import Colors
 
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
-    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, update!, linear_interpolate, value, @timestamps
+    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, @timestamps
 
 abstract type EasingType end
 
@@ -148,24 +148,27 @@ Base.Broadcast.broadcastable(e::Easing) = Ref(e)
 Observables.on(f::Function, a::Animation) = Observables.on(f, a.obs)
 # Observables.map(a::Animation, f::Function) =
 
-function update!(a::Animation, t::Real)
-
+function at(a::Animation, t::Real)
     # the first keyframe with a higher time is the second one of the two with
     # t in between (except when t is before the first or after the last keyframe)
     i_first_after_t = findfirst(kf -> kf.t >= t, a.frames)
 
     if isnothing(i_first_after_t)
         # t after last keyframe
-        a.obs[] = a.frames[end].value
+        return a.frames[end].value
     elseif i_first_after_t == 1
         # t before first keyframe
-        a.obs[] = a.frames[1].value
+        return a.frames[1].value
     else
         # t between two keyframes
         i_from = i_first_after_t - 1
         i_to = i_first_after_t
-        a.obs[] = interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
+        return interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
     end
+end
+
+function update!(a::Animation, t::Real)
+    a.obs[] = at(a, t)
 end
 
 function validate_keyframe_times(kfs::Vector{Keyframe{T}}) where T
