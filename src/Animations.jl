@@ -293,7 +293,7 @@ function linear_interpolate(fraction::Real, array1::T, array2::T) where T <: Abs
 end
 
 function linear_interpolate(fraction::Real, c1::T, c2::T) where T <: Colors.Colorant
-    weighted_color_mean(1 - fraction, c1, c2)
+    Colors.weighted_color_mean(1 - fraction, c1, c2)
 end
 
 function interpolation_ratio(easing::SineIOEasing, fraction)
