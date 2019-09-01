@@ -6,6 +6,8 @@ import Colors
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, @timestamps
 
+export noease, stepease, sineio, lin, polyin, polyout, expin
+
 abstract type EasingType end
 
 struct Easing{T <: EasingType}
@@ -14,13 +16,6 @@ struct Easing{T <: EasingType}
     yoyo::Bool
     prewait::Float64
     postwait::Float64
-
-    function Easing(easing, n, yoyo, prewait, postwait)
-        if yoyo && iseven(n)
-            error("Yoyo works only with odd numbers of repetitions, it has to reach 1 at the end.")
-        end
-        new{typeof(easing)}(easing, n, yoyo, prewait, postwait)
-    end
 end
 
 struct LinearEasing <: EasingType end
@@ -89,6 +84,14 @@ end
 
 Easing(easing=LinearEasing(); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
 
+noease(;kwargs...) = Easing(NoEasing(); kwargs...)
+stepease(;kwargs...) = Easing(StepEasing(); kwargs...)
+sineio(;kwargs...) = Easing(SineIOEasing(); kwargs...)
+lin(;kwargs...) = Easing(LinearEasing(); kwargs...)
+polyin(power; kwargs...) = Easing(PolyInEasing(power); kwargs...)
+polyout(power; kwargs...) = Easing(PolyOutEasing(power); kwargs...)
+expin(exponent; kwargs...) = Easing(ExpInEasing(exponent); kwargs...)
+
 struct Keyframe{T}
     t::Float64
     value::T
@@ -136,7 +139,7 @@ struct Animation{T}
         Animation(keyframes, easings)
     end
 
-    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easing::Easing) where T
+    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easing::Easing=lin()) where T
         Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
     end
 
@@ -154,13 +157,15 @@ function at(a::Animation, t::Real)
     i_first_after_t = findfirst(kf -> kf.t >= t, a.frames)
 
     if isnothing(i_first_after_t)
-        # t after last keyframe
-        return a.frames[end].value
+        # t lies after the last keyframe
+        # return a.frames[end].value
+        return interpolate(a.easings[end], t, a.frames[end-1], a.frames[end])
     elseif i_first_after_t == 1
-        # t before first keyframe
-        return a.frames[1].value
+        # t lies before the first keyframe
+        # return a.frames[1].value
+        return interpolate(a.easings[1], t, a.frames[1], a.frames[2])
     else
-        # t between two keyframes
+        # t lies between two keyframes
         i_from = i_first_after_t - 1
         i_to = i_first_after_t
         return interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
@@ -200,7 +205,12 @@ function fraction_to_repeated(time_fraction::Real, n_repeats::Int, yoyo::Bool, p
     if time_fraction == 0
         return 0
     elseif time_fraction == 1
-        return 1
+        # if there is an even yoyo value it needs to come down to zero at the end
+        if yoyo && n_repeats % 2 == 0
+            return 0
+        else
+            return 1
+        end
     elseif time_fraction > 1 || time_fraction < 0
         error("Time fraction is $time_fraction but should be from 0 to 1")
     end
@@ -241,13 +251,17 @@ end
 function interpolate(easing::Easing, t::Real, k1::Keyframe{T}, k2::Keyframe{T}) where T
 
     # the fraction of the keyframe interval we're at
-    time_fraction = (t - k1.t) / (k2.t - k1.t)
+    time_fraction_unclamped = (t - k1.t) / (k2.t - k1.t)
 
-    if time_fraction <= 0
-        return k1.value
-    elseif time_fraction >= 1
-        return k2.value
-    end
+    # this is so the even yoyos work, the time value needs to go through the easing
+    # but at least it's clamped
+    time_fraction = clamp(time_fraction_unclamped, 0, 1)
+
+    # if time_fraction <= 0
+    #     return k1.value
+    # elseif time_fraction >= 1
+    #     return k2.value
+    # end
 
     # handle repetitions
     # on the previous interval of 0 to 1 there are now n 0 to 1 intervals

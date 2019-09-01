@@ -106,10 +106,19 @@ end
 
     animation = Animation(
         [0, 3],
-        [0.0, 1.0],
-        Easing(LinearEasing())
+        [0.0, 1.0]
     )
 
     println(animation(1.5))
 
+end
+
+@testset "even yoyo" begin
+    animation = Animation(
+        [1, 3],
+        [0.0, 1.0],
+        lin(n=2, yoyo=true)
+    )
+
+    @test animation.(0:4) == [0, 0, 1, 0, 0]
 end
