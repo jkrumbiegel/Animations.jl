@@ -134,12 +134,12 @@ struct Animation{T}
         Animation(kfs, Easing[easing for _ in 1:length(kfs) - 1])
     end
 
-    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easings::Vector{<:Easing}) where T
+    function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easings::AbstractVector{<:Easing}) where T
         keyframes = Keyframe{T}.(timestamps, values)
         Animation(keyframes, easings)
     end
 
-    function Animation(timestamps::Vector{<:Real}, values::Vector{T}, easing::Easing=lin()) where T
+    function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=lin()) where T
         Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
     end
 
