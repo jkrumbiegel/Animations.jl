@@ -3,10 +3,10 @@ module Animations
 import Observables
 import Colors
 
-export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
+export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, SaccadicEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, @timestamps
 
-export noease, stepease, sineio, lin, polyin, polyout, expin
+export noease, stepease, sineio, lin, polyin, polyout, expin, saccadic
 
 abstract type EasingType end
 
@@ -22,6 +22,9 @@ struct LinearEasing <: EasingType end
 struct SineIOEasing <: EasingType end
 struct NoEasing <: EasingType end
 struct StepEasing <: EasingType end
+struct SaccadicEasing <: EasingType
+    power::Float64
+end
 
 """
 Mixes two easings with a constant ratio r, so that final = e1 * r + e2 * (1 - r)
@@ -87,6 +90,7 @@ Easing(easing=LinearEasing(); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easi
 noease(;kwargs...) = Easing(NoEasing(); kwargs...)
 stepease(;kwargs...) = Easing(StepEasing(); kwargs...)
 sineio(;kwargs...) = Easing(SineIOEasing(); kwargs...)
+saccadic(power; kwargs...) = Easing(SaccadicEasing(power); kwargs...)
 lin(;kwargs...) = Easing(LinearEasing(); kwargs...)
 polyin(power; kwargs...) = Easing(PolyInEasing(power); kwargs...)
 polyout(power; kwargs...) = Easing(PolyOutEasing(power); kwargs...)
@@ -314,6 +318,10 @@ end
 
 function interpolation_ratio(easing::ExpInEasing, fraction)
     ((easing.exponent ^ fraction) - 1) / (easing.exponent - 1) # scale to 1
+end
+
+function interpolation_ratio(easing::SaccadicEasing, fraction)
+    -(sin((-fraction + 1) ^ easing.power * pi - pi/2) * 0.5 + 0.5) + 1
 end
 
 function interpolation_ratio(easing::MixedEasing, fraction)
