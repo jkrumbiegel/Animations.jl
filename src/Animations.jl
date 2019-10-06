@@ -148,6 +148,55 @@ function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}
     Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
 end
 
+function Animation(args...; defaulteasing=Easing())
+
+    timestamps = Float64[]
+    valtype = typeof(args[2])
+    values = Vector{valtype}()
+    easings = Easing[]
+
+    push!(timestamps, args[1])
+    last = :time
+    i = 2
+    while i <= length(args)
+        if last == :time
+            if typeof(args[i]) <: valtype
+                push!(values, args[i])
+            else
+                error("Value with type <: $valtype expected after timestamp at index $i. Got $(typeof(args[i])) instead.")
+            end
+            last = :value
+        elseif last == :value
+            if typeof(args[i]) <: Easing
+                push!(easings, args[i])
+                last = :easing
+            elseif typeof(args[i]) <: Real
+                push!(easings, defaulteasing)
+                push!(timestamps, args[i])
+                last = :time
+            else
+                error("Timestamp with type <: Real or easing with type <: Easing expected after value at index $i. Got $(typeof(args[i])) instead.")
+            end
+        elseif last == :easing
+            if typeof(args[i]) <: Real
+                push!(timestamps, args[i])
+            else
+                error("Timestamp with type <: Real expected after easing at index $i. Got $(typeof(args[i])) instead.")
+            end
+            last = :time
+        end
+
+        i += 1
+    end
+
+    if last == :time
+        error("Last value can't be a timestamp.")
+    elseif last == :easing
+        error("Last value can't be an easing")
+    end
+
+    Animation(timestamps, values, easings)
+end
 
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 Base.Broadcast.broadcastable(e::Easing) = Ref(e)

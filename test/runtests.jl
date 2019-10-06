@@ -20,6 +20,17 @@ using Colors: Color, RGB, weighted_color_mean
     update!.(animation, [0, 1, 2, 3, 4, 5, 6, 7])
 end
 
+@testset "animation creation" begin
+    anim = Animation(
+        1, 5,
+        2, 10,
+        saccadic(2),
+        3, 20,
+        sineio(),
+        4, 100
+    )
+end
+
 @testset "vector interpolate" begin
 
     kf1 = Keyframe(0, [0.0, 0.0, 0.0])
