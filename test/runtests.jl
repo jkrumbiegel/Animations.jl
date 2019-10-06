@@ -31,6 +31,23 @@ end
     )
 end
 
+@testset "temporally changed animations" begin
+    anim = Animation(
+        1, 10,
+        2, 20,
+        3, 30,
+    )
+
+    anim_later = anim + 1
+    @test timestamps(anim_later) == [2, 3, 4]
+    anim_earlier = anim - 1
+    @test timestamps(anim_earlier) == [0, 1, 2]
+    anim_longer = anim * 2
+    @test timestamps(anim_longer) == [2, 4, 6]
+    anim_shorter = anim / 2
+    @test timestamps(anim_shorter) == [0.5, 1, 1.5]
+end
+
 @testset "vector interpolate" begin
 
     kf1 = Keyframe(0, [0.0, 0.0, 0.0])
