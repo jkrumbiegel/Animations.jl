@@ -77,15 +77,6 @@ end
 
 end
 
-@testset "from macro" begin
-
-    animation = Animation(
-        @timestamps(1, 2, :3, :5),
-        [1, 2, 3, 4],
-        [Easing(), Easing(), Easing()]
-    )
-end
-
 @testset "yoyo repeat" begin
 
     animation = Animation(
