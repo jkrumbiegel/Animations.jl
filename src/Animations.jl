@@ -4,7 +4,7 @@ import Observables
 import Colors
 
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, SaccadicEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
-    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, @timestamps
+    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value
 
 export noease, stepease, sineio, lin, polyin, polyout, expin, saccadic
 
@@ -357,34 +357,6 @@ end
 
 function interpolation_ratio(easing::PolyOutEasing, fraction)
     1 - ((1 - fraction) ^ easing.power)
-end
-
-macro timestamps(args...)
-
-    ts = Float64[args[1]]
-
-    if length(args) > 1
-        for a in args[2:end]
-            if typeof(a) <: QuoteNode
-                if isreal(a.value)
-                    if a.value <= 0
-                        error("Relative timestamp must be larger than 0, but is $(a.value)")
-                    end
-                    push!(ts, ts[end] + a.value)
-                else
-                    error("$(a.value) is not a number")
-                end
-            elseif typeof(a) <: Real
-                if a <= ts[end]
-                    error("$a is smaller than the previous timestamp $(ts[end])")
-                end
-                push!(ts, a)
-            else
-                error("$(a) is not a valid timestamp")
-            end
-        end
-    end
-    :($ts)
 end
 
 value(a::Animation) = a.obs[]
