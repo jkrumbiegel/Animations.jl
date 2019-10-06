@@ -1,6 +1,6 @@
 name = "Animations"
 uuid = "27a7e980-b3e6-11e9-2bcd-0b925532e340"
-authors = ["Julius Georg Krumbiegel <jkrumbiegel@oculus.com>"]
+authors = ["Julius Krumbiegel <julius.krumbiegel@gmail.com>"]
 version = "0.1.0"
 
 [deps]
