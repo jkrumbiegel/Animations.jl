@@ -125,30 +125,30 @@ struct Animation{T}
 
         new{T}(obs, kfs, easings)
     end
-
-    function Animation(differenttype_kfs::Vector{Keyframe}, easings::Vector{Easing})
-        types = unique(map(x -> typeof(x), differenttype_kfs))
-        error("""All keyframes need the same parametric type. Types are:\n$types""")
-    end
-
-    function Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T
-        if length(kfs) <= 1
-            error("There must be at least two keyframes.")
-        end
-        Animation(kfs, Easing[easing for _ in 1:length(kfs) - 1])
-    end
-
-    function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easings::AbstractVector{<:Easing}) where T
-        keyframes = Keyframe{T}.(timestamps, values)
-        Animation(keyframes, easings)
-    end
-
-    function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=lin()) where T
-        Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
-    end
-
-
 end
+
+function Animation(differenttype_kfs::Vector{Keyframe}, easings::Vector{Easing})
+    types = unique(map(x -> typeof(x), differenttype_kfs))
+    error("""All keyframes need the same parametric type. Types are:\n$types""")
+end
+
+function Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T
+    if length(kfs) <= 1
+        error("There must be at least two keyframes.")
+    end
+    Animation(kfs, Easing[easing for _ in 1:length(kfs) - 1])
+end
+
+function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easings::AbstractVector{<:Easing}) where T
+    keyframes = Keyframe{T}.(timestamps, values)
+    Animation(keyframes, easings)
+end
+
+function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=lin()) where T
+    Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
+end
+
+
 Base.Broadcast.broadcastable(a::Animation) = Ref(a)
 Base.Broadcast.broadcastable(e::Easing) = Ref(e)
 
