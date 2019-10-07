@@ -69,14 +69,20 @@ function Animation(args...; defaulteasing=Easing())
                 push!(easings, defaulteasing)
                 push!(timestamps, args[i])
                 last = :time
+            elseif typeof(args[i]) <: Relative
+                push!(easings, defaulteasing)
+                push!(timestamps, timestamps[end] + args[i].t)
+                last = :time
             else
-                error("Timestamp with type <: Real or easing with type <: Easing expected after value at index $i. Got $(typeof(args[i])) instead.")
+                error("Timestamp with type <: Real or Relative, or easing with type <: Easing expected after value at index $i. Got $(typeof(args[i])) instead.")
             end
         elseif last == :easing
             if typeof(args[i]) <: Real
                 push!(timestamps, args[i])
+            elseif typeof(args[i]) <: Relative
+                push!(timestamps, timestamps[end] + args[i].t)
             else
-                error("Timestamp with type <: Real expected after easing at index $i. Got $(typeof(args[i])) instead.")
+                error("Timestamp with type <: Real or Relative expected after easing at index $i. Got $(typeof(args[i])) instead.")
             end
             last = :time
         end
@@ -141,4 +147,15 @@ value(a::Animation) = observable(a)[]
 observable(a::Animation) = a.obs
 
 
-value(a::Animation) = a.obs[]
+struct Relative
+    t::Float64
+
+    function Relative(t::Real)
+        if t <= 0
+            error("a relative has to be positive, not $t")
+        end
+        new(convert(Float64, t))
+    end
+end
+
+rel(t::Real) = Relative(t)

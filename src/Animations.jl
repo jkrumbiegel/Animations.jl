@@ -35,6 +35,7 @@ export Animation,
     keyframes,
     keyvalues,
     observable,
+    rel,
     timestamps,
     update!,
     value
