@@ -33,6 +33,7 @@ export Keyframe
 export Animation,
     easings,
     keyvalues,
+    observable,
     timestamps,
     update!,
     value

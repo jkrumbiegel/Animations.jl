@@ -130,9 +130,14 @@ function (a::Animation)(t::Real)
 end
 
 function update!(a::Animation, t::Real)
-    a.obs[] = at(a, t)
+    observable(a)[] = at(a, t)
 end
 
-Observables.on(f::Function, a::Animation) = Observables.on(f, a.obs)
+Observables.on(f::Function, a::Animation) = Observables.on(f, observable(a))
+
+value(a::Animation) = observable(a)[]
+
+observable(a::Animation) = a.obs
+
 
 value(a::Animation) = a.obs[]
