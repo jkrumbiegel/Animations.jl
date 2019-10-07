@@ -6,7 +6,7 @@ import Colors
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, SaccadicEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
     MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, easings, timestamps, keyvalues
 
-export noease, stepease, sineio, lin, polyin, polyout, expin, saccadic
+export noease, stepease, sineio, linease, polyin, polyout, expin, saccadic
 
 abstract type EasingType end
 
@@ -91,7 +91,7 @@ noease(;kwargs...) = Easing(NoEasing(); kwargs...)
 stepease(;kwargs...) = Easing(StepEasing(); kwargs...)
 sineio(;kwargs...) = Easing(SineIOEasing(); kwargs...)
 saccadic(power; kwargs...) = Easing(SaccadicEasing(power); kwargs...)
-lin(;kwargs...) = Easing(LinearEasing(); kwargs...)
+linease(;kwargs...) = Easing(LinearEasing(); kwargs...)
 polyin(power; kwargs...) = Easing(PolyInEasing(power); kwargs...)
 polyout(power; kwargs...) = Easing(PolyOutEasing(power); kwargs...)
 expin(exponent; kwargs...) = Easing(ExpInEasing(exponent); kwargs...)
@@ -144,7 +144,7 @@ function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}
     Animation(keyframes, easings)
 end
 
-function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=lin()) where T
+function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=linease()) where T
     Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
 end
 

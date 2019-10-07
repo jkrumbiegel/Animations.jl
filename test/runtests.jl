@@ -30,7 +30,7 @@ end
 
     @test keyvalues(anim) == [5, 10, 20, 100]
     @test timestamps(anim) == [1, 2, 3, 4]
-    @test easings(anim) == [lin(), saccadic(2), sineio()]
+    @test easings(anim) == [linease(), saccadic(2), sineio()]
 end
 
 @testset "animation creation defaulteasing" begin
@@ -134,7 +134,7 @@ end
     animation = Animation(
         [1, 3],
         [0.0, 1.0],
-        lin(n=2, yoyo=true)
+        linease(n=2, yoyo=true)
     )
 
     @test animation.(0:4) == [0, 0, 1, 0, 0]
