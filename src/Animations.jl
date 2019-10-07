@@ -4,7 +4,7 @@ import Observables
 import Colors
 
 export Easing, EasingType, LinearEasing, SineIOEasing, NoEasing, StepEasing, SaccadicEasing, ExpInEasing, EasedEasing, PolyInEasing, PolyOutEasing,
-    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, timestamps
+    MixedEasing, MultipliedEasing, Animation, Keyframe, add!, at, update!, linear_interpolate, value, easings, timestamps, keyvalues
 
 export noease, stepease, sineio, lin, polyin, polyout, expin, saccadic
 
@@ -211,7 +211,9 @@ Base.:-(a::Animation, t::Real) = Animation(a.frames .- t, a.easings)
 Base.:*(a::Animation, stretch::Real) = Animation(a.frames .* stretch, a.easings)
 Base.:/(a::Animation, compress::Real) = Animation(a.frames ./ compress, a.easings)
 
+easings(a::Animation) = a.easings
 timestamps(a::Animation) = [kf.t for kf in a.frames]
+keyvalues(a::Animation) = [kf.value for kf in a.frames]
 
 Observables.on(f::Function, a::Animation) = Observables.on(f, a.obs)
 # Observables.map(a::Animation, f::Function) =
