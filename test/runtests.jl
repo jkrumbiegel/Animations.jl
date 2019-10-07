@@ -14,10 +14,8 @@ using Colors: Color, RGB, weighted_color_mean
         [Easing(SineIOEasing()), Easing(LinearEasing())]
     )
 
-    on(animation) do x
-        println(x)
-    end
-    update!.(animation, [0, 1, 2, 3, 4, 5, 6, 7])
+    @test timestamps(animation) == [1, 3, 6]
+    @test keyvalues(animation) == [5.0, 10.0, 0.0]
 end
 
 @testset "animation creation" begin
@@ -29,6 +27,10 @@ end
         sineio(),
         4, 100
     )
+
+    @test keyvalues(anim) == [5, 10, 20, 100]
+    @test timestamps(anim) == [1, 2, 3, 4]
+    @test easings(anim) == [lin(), saccadic(2), sineio()]
 end
 
 @testset "temporally changed animations" begin
@@ -58,32 +60,26 @@ end
         Easing(SineIOEasing())
     )
 
-    on(animation) do x
-        println(x)
-    end
-    update!.(animation, [0, 0.25, 0.5, 0.75, 1])
-
+    @test animation(0) == [0.0, 0.0, 0.0]
+    @test animation(0.5) == [0.5, 1.0, 1.5]
+    @test animation(1) == [1.0, 2.0, 3.0]
 end
 
 @testset "color interpolate" begin
 
-    kf1 = Keyframe(0, RGB(0.0, 0, 0))
-    kf2 = Keyframe(1, RGB(1, 0.5, 0.3))
+    c1 = RGB(0.0, 0, 0)
+    c2 = RGB(1, 0.5, 0.3)
+    kf1 = Keyframe(0, c1)
+    kf2 = Keyframe(1, c2)
 
     animation = Animation(
         [kf1, kf2],
         Easing(SineIOEasing())
     )
 
-    on(animation) do x
-        println(x)
-    end
-
-    # add correct linear interpolation method
-    Animations.linear_interpolate(fraction::Real, c1::Color, c2::Color) = weighted_color_mean(1 - fraction, c1, c2)
-
-    update!.(animation, [0, 0.25, 0.5, 0.75, 1])
-
+    @test animation(0) == c1
+    @test animation(0.5) == Animations.Colors.weighted_color_mean(0.5, c1, c2)
+    @test animation(1) == c2
 end
 
 @testset "string steps" begin
@@ -97,12 +93,11 @@ end
         Easing(NoEasing())
     )
 
-    on(animation) do x
-        println(x)
-    end
-
-    update!.(animation, [0, 0.5, 1, 1.5, 2])
-
+    @test animation(0) == "first"
+    @test animation(0.5) == "first"
+    @test animation(1) == "second"
+    @test animation(1.5) == "second"
+    @test animation(2) == "third"
 end
 
 @testset "yoyo repeat" begin
@@ -113,22 +108,8 @@ end
         Easing(LinearEasing(), n=3, yoyo=true)
     )
 
-    on(animation) do x
-        println(x)
-    end
-
-    update!.(animation, collect(0:0.25:3))
-
-end
-
-@testset "call" begin
-
-    animation = Animation(
-        [0, 3],
-        [0.0, 1.0]
-    )
-
-    println(animation(1.5))
+    results = [0.0, 0.25, 0.5, 0.75, 1.0, 0.75, 0.5, 0.25, 0.0, 0.25, 0.5, 0.75, 1.0]
+    @test animation.(collect(0:0.25:3)) == results
 
 end
 
