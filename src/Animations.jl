@@ -32,6 +32,7 @@ export Keyframe
 # animation.jl
 export Animation,
     easings,
+    keyframes,
     keyvalues,
     observable,
     timestamps,

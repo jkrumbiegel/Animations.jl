@@ -102,6 +102,7 @@ Base.:/(a::Animation, compress::Real) = Animation(a.frames ./ compress, a.easing
 
 easings(a::Animation) = a.easings
 timestamps(a::Animation) = [kf.t for kf in a.frames]
+keyframes(a::Animation) = a.frames
 keyvalues(a::Animation) = [kf.value for kf in a.frames]
 
 function at(a::Animation, t::Real)
