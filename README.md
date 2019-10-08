@@ -22,6 +22,16 @@ anim = Animation(
 )
 ```
 
+Another way to write this is with vectors for timestamps and values
+
+```
+anim = Animation(
+    [0, 2],
+    [0, 10],
+    sineio(n=2, yoyo=true),
+)
+```
+
 You can get an animation's value for a specific t by calling it:
 
 ```
