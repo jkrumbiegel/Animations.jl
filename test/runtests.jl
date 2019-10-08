@@ -33,6 +33,15 @@ end
     @test easings(anim) == [linease(), saccadic(2), sineio()]
 end
 
+@testset "animation creation rel values" begin
+    anim = Animation(
+        0, 3,
+        rel(2), 4,
+        rel(1), 3
+    )
+    @test timestamps(anim) == [0, 2, 3]
+end
+
 @testset "animation creation defaulteasing" begin
     e = polyin(3; n=3, yoyo=true)
     anim = Animation(

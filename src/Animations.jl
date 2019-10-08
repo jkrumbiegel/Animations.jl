@@ -31,6 +31,7 @@ export Keyframe
 
 # animation.jl
 export Animation,
+    at,
     easings,
     keyframes,
     keyvalues,
