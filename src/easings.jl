@@ -8,13 +8,12 @@ struct Easing{T <: EasingType}
     postwait::Float64
 end
 
-struct LinearEasing <: EasingType end
-struct SineIOEasing <: EasingType end
-struct NoEasing <: EasingType end
-struct StepEasing <: EasingType end
-struct SaccadicEasing <: EasingType
-    power::Float64
+struct FuncEasing <: EasingType
+    f::Function
+    args::Tuple
 end
+
+FuncEasing(f::Function) = FuncEasing(f, ())
 
 """
 Mixes two easings with a constant ratio r, so that final = e1 * r + e2 * (1 - r)
@@ -54,36 +53,35 @@ struct EasedEasing{S <: Easing, T <: Easing, U <: Easing} <: EasingType
     end
 end
 
-"""
-Polynomial in easing, so 2 is quad in, 3 is cubic in, etc
-"""
-struct PolyInEasing <: EasingType
-    power::Float64
-end
+Easing(easing = FuncEasing(f_linease); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
 
-struct PolyOutEasing <: EasingType
-    power::Float64
-end
+opposite(f) = fraction -> 1 - f(1 - fraction)
 
-struct ExpInEasing <: EasingType
-    exponent::Float64
-    function ExpInEasing(exp)
-        if exp == 1
-            error("Exponent base can't be 1.")
-        end
-        new(exp)
-    end
-end
+funcease(f, args...; kwargs...) = Easing(FuncEasing(f, args); kwargs...)
 
-Easing(easing=LinearEasing(); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
+f_noease(fraction) = fraction == 1 ? 1 : 0
+noease(;kwargs...) = funcease(f_noease; kwargs...)
 
-noease(;kwargs...) = Easing(NoEasing(); kwargs...)
-stepease(;kwargs...) = Easing(StepEasing(); kwargs...)
-sineio(;kwargs...) = Easing(SineIOEasing(); kwargs...)
-saccadic(power; kwargs...) = Easing(SaccadicEasing(power); kwargs...)
-linease(;kwargs...) = Easing(LinearEasing(); kwargs...)
-polyin(power; kwargs...) = Easing(PolyInEasing(power); kwargs...)
-polyout(power; kwargs...) = Easing(PolyOutEasing(power); kwargs...)
-expin(exponent; kwargs...) = Easing(ExpInEasing(exponent); kwargs...)
+f_stepease(fraction) = fraction < 0.5 ? 0 : 1
+stepease(;kwargs...) = funcease(f_stepease; kwargs...)
+
+f_sineio(fraction) = sin(pi * fraction - 0.5pi) * 0.5 + 0.5
+sineio(;kwargs...) = funcease(f_sineio; kwargs...)
+
+f_saccadic(fraction, power) = -(sin((-fraction + 1) ^ power * pi - pi/2) * 0.5 + 0.5) + 1
+saccadic(power; kwargs...) = funcease(f_saccadic, power; kwargs...)
+
+f_linease(fraction) = fraction
+linease(;kwargs...) = funcease(f_linease; kwargs...)
+
+f_polyin(fraction, power) = fraction ^ power
+polyin(power; kwargs...) = funcease(f_polyin, power; kwargs...)
+
+polyout(power; kwargs...) = funcease(opposite(f_polyin), power; kwargs...)
+
+f_expin(fraction, exponent) = ((exponent ^ fraction) - 1) / (exponent - 1)
+expin(exponent; kwargs...) = funcease(f_expin, power; kwargs...)
+
+expout(exponent; kwargs...) = funcease(opposite(f_expin), power; kwargs...)
 
 Base.Broadcast.broadcastable(e::Easing) = Ref(e)

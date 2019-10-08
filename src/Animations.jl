@@ -5,26 +5,19 @@ import Colors
 
 # easings.jl
 export Easing,
-    EasingType,
     expin,
-    ExpInEasing,
     EasedEasing,
-    LinearEasing,
+    funcease,
+    FuncEasing,
     linease,
     MixedEasing,
     MultipliedEasing,
     noease,
-    NoEasing,
     polyin,
-    PolyInEasing,
     polyout,
-    PolyOutEasing,
-    stepease,
     saccadic,
-    SaccadicEasing,
     sineio,
-    SineIOEasing,
-    StepEasing
+    stepease
 
 # keyframes.jl
 export Keyframe

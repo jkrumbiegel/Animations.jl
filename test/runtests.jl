@@ -11,7 +11,7 @@ using Colors: Color, RGB, weighted_color_mean
 
     animation = Animation(
         [kf1, kf2, kf3],
-        [Easing(SineIOEasing()), Easing(LinearEasing())]
+        [sineio(), linease()]
     )
 
     @test timestamps(animation) == [1, 3, 6]
@@ -83,7 +83,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(SineIOEasing())
+        sineio()
     )
 
     @test animation(0) == [0.0, 0.0, 0.0]
@@ -100,7 +100,7 @@ end
 
     animation = Animation(
         [kf1, kf2],
-        Easing(SineIOEasing())
+        sineio()
     )
 
     @test animation(0) == c1
@@ -116,7 +116,7 @@ end
 
     animation = Animation(
         [kf1, kf2, kf3],
-        Easing(NoEasing())
+        noease()
     )
 
     @test animation(0) == "first"
@@ -131,7 +131,7 @@ end
     animation = Animation(
         [0, 3],
         [0.0, 1.0],
-        Easing(LinearEasing(), n=3, yoyo=true)
+        linease(n=3, yoyo=true)
     )
 
     results = [0.0, 0.25, 0.5, 0.75, 1.0, 0.75, 0.5, 0.25, 0.0, 0.25, 0.5, 0.75, 1.0]

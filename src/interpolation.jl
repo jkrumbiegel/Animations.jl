@@ -96,28 +96,8 @@ function linear_interpolate(fraction::Real, c1::T, c2::T) where T <: Colors.Colo
     Colors.weighted_color_mean(1 - fraction, c1, c2)
 end
 
-function interpolation_ratio(easing::SineIOEasing, fraction)
-    sin(pi * fraction - 0.5pi) * 0.5 + 0.5
-end
-
-function interpolation_ratio(easing::LinearEasing, fraction)
-    fraction
-end
-
-function interpolation_ratio(easing::StepEasing, fraction)
-    fraction < 0.5 ? 0 : 1
-end
-
-function interpolation_ratio(easing::NoEasing, fraction)
-    fraction == 1 ? 1 : 0
-end
-
-function interpolation_ratio(easing::ExpInEasing, fraction)
-    ((easing.exponent ^ fraction) - 1) / (easing.exponent - 1) # scale to 1
-end
-
-function interpolation_ratio(easing::SaccadicEasing, fraction)
-    -(sin((-fraction + 1) ^ easing.power * pi - pi/2) * 0.5 + 0.5) + 1
+function interpolation_ratio(easing::FuncEasing, fraction)
+    easing.f(fraction, easing.args...)
 end
 
 function interpolation_ratio(easing::MixedEasing, fraction)
@@ -145,12 +125,4 @@ function interpolation_ratio(easing::EasedEasing, fraction)
     interp_fraction_ease = fraction_to_repeated(fraction, ease.n, ease.yoyo, ease.prewait, ease.postwait)
     final = interpolation_ratio(easing.e1.easing, interp_fraction1) * (1 - interp_fraction_ease) +
             interpolation_ratio(easing.e2.easing, interp_fraction2) * interp_fraction_ease
-end
-
-function interpolation_ratio(easing::PolyInEasing, fraction)
-    fraction ^ easing.power
-end
-
-function interpolation_ratio(easing::PolyOutEasing, fraction)
-    1 - ((1 - fraction) ^ easing.power)
 end
