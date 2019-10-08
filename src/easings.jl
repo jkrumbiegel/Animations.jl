@@ -11,6 +11,15 @@ end
 struct FuncEasing <: EasingType
     f::Function
     args::Tuple
+
+    function FuncEasing(f, args)
+        f0 = f(0, args...)
+        f1 = f(1, args...)
+        if !(f0 == 0 && f1 == 1)
+            error("The given easing function is not 0 and 1 at t = 0 and t = 1, but $f0 and $f1")
+        end
+        new(f, args)
+    end
 end
 
 FuncEasing(f::Function) = FuncEasing(f, ())
