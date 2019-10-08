@@ -10,6 +10,10 @@ create your own. Keyframe values can be anything that can be linearly interpolat
 can also add your own methods for special types. An easing can have repetitions and
 delays, so that looping animations are simpler to create.
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example.gif">
+</p>
+
 ### Syntax examples
 
 Creating an animation from 0 at t = 0, to 10 at t = 2, with a sine in / out easing that loops back and forth once:
