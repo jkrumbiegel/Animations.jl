@@ -58,3 +58,19 @@ coloranim = Animation(
 )
 
 ```
+
+Interpolation also works easily with arrays of values:
+
+```julia
+Animation(
+    0, rand(25),
+    sineio(n=2, yoyo=true, prewait=0.3),
+    2, rand(25)
+)
+```
+
+Here's an example using arrays, in this case grid of points:
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example_array.gif">
+</p>
