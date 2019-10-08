@@ -38,6 +38,7 @@ function test()
 
     end
 
-    record(frame, "test.gif", 30, duration)
+    filepath = joinpath(dirname(pathof(Animations)), "../misc/example.gif")
+    record(frame, filepath, 30, duration)
 
 end; test()
