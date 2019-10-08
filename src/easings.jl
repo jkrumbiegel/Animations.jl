@@ -64,7 +64,11 @@ end
 
 Easing(easing = FuncEasing(f_linease); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
 
-opposite(f) = fraction -> 1 - f(1 - fraction)
+function opposite(f)
+    function opfunc(fraction, args...)
+        1 - f(1 - fraction, args...)
+    end
+end
 
 funcease(f, args...; kwargs...) = Easing(FuncEasing(f, args); kwargs...)
 
@@ -91,6 +95,6 @@ polyout(power; kwargs...) = funcease(opposite(f_polyin), power; kwargs...)
 f_expin(fraction, exponent) = ((exponent ^ fraction) - 1) / (exponent - 1)
 expin(exponent; kwargs...) = funcease(f_expin, power; kwargs...)
 
-expout(exponent; kwargs...) = funcease(opposite(f_expin), power; kwargs...)
+expout(exponent; kwargs...) = funcease(opposite(f_expin), exponent; kwargs...)
 
 Base.Broadcast.broadcastable(e::Easing) = Ref(e)
