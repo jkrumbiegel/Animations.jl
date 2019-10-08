@@ -22,7 +22,7 @@ with a sine in / out easing that yoyos 3 times and then a linear easing:
 ```julia
 anim = Animation(
     0, 0,
-    sineio(n=2, yoyo=true),
+    sineio(n=3, yoyo=true),
     2, 10,
     linease(),
     3, 20
@@ -36,7 +36,7 @@ first version can be easier to understand with multiple timestamps:
 anim = Animation(
     [0, 2, 3],
     [0, 10, 20],
-    [sineio(n=2, yoyo=true), linease()],
+    [sineio(n=3, yoyo=true), linease()],
 )
 ```
 
