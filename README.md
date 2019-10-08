@@ -69,7 +69,7 @@ Animation(
 )
 ```
 
-Here's an example using arrays, in this case grid of points:
+Here's an example using arrays, in this case a grid of points:
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example_array.gif">
