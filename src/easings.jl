@@ -97,4 +97,8 @@ expin(exponent; kwargs...) = funcease(f_expin, power; kwargs...)
 
 expout(exponent; kwargs...) = funcease(opposite(f_expin), exponent; kwargs...)
 
+mixed(e1, e2; kwargs...) = Easing(MixedEasing(e1, e2); kwargs...)
+multiplied(e1, e2; kwargs...) = Easing(MultipliedEasing(e1, e2); kwargs...)
+eased(e1, e2, with_e; kwargs...) = Easing(EasedEasing(e1, e2, with_e); kwargs...)
+
 Base.Broadcast.broadcastable(e::Easing) = Ref(e)

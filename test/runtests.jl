@@ -148,3 +148,33 @@ end
 
     @test animation.(0:4) == [0, 0, 1, 0, 0]
 end
+
+@testset "mixed easing" begin
+    animation = Animation(
+        [0, 1],
+        [0, 1],
+        mixed(sineio(), polyin(2))
+    )
+    @test animation(0) == 0
+    @test animation(1) == 1
+end
+
+@testset "multiplied easing" begin
+    animation = Animation(
+        [0, 1],
+        [0, 1],
+        multiplied(sineio(), polyin(2))
+    )
+    @test animation(0) == 0
+    @test animation(1) == 1
+end
+
+@testset "eased easing" begin
+    animation = Animation(
+        [0, 1],
+        [0, 1],
+        eased(sineio(), polyin(2), saccadic(2))
+    )
+    @test animation(0) == 0
+    @test animation(1) == 1
+end

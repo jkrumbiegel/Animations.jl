@@ -5,14 +5,13 @@ import Colors
 
 # easings.jl
 export Easing,
+    eased,
     expin,
     expout,
-    EasedEasing,
     funcease,
-    FuncEasing,
     linease,
-    MixedEasing,
-    MultipliedEasing,
+    mixed,
+    multiplied,
     noease,
     opposite,
     polyin,
