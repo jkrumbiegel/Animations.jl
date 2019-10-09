@@ -15,7 +15,7 @@ function test()
 
     a_x = Animation(
         0, 0,
-        linease(n=2, yoyo=true),
+        linear(n=2, yoyo=true),
         duration, 1)
 
     a_color = Animation(

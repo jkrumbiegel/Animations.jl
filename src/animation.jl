@@ -39,7 +39,7 @@ function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}
     Animation(keyframes, easings)
 end
 
-function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=linease()) where T
+function Animation(timestamps::AbstractVector{<:Real}, values::AbstractVector{T}, easing::Easing=linear()) where T
     Animation(timestamps, values, Easing[easing for _ in 1:(length(timestamps) - 1)])
 end
 

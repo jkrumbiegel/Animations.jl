@@ -62,7 +62,7 @@ struct EasedEasing{S <: Easing, T <: Easing, U <: Easing} <: EasingType
     end
 end
 
-Easing(easing = FuncEasing(f_linease); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
+Easing(easing = FuncEasing(f_linear); n=1, yoyo=false, prewait=0.0, postwait=0.0) = Easing(easing, n, yoyo, prewait, postwait)
 
 function opposite(f)
     function opfunc(fraction, args...)
@@ -84,8 +84,8 @@ sineio(;kwargs...) = funcease(f_sineio; kwargs...)
 f_saccadic(fraction, power) = -(sin((-fraction + 1) ^ power * pi - pi/2) * 0.5 + 0.5) + 1
 saccadic(power; kwargs...) = funcease(f_saccadic, power; kwargs...)
 
-f_linease(fraction) = fraction
-linease(;kwargs...) = funcease(f_linease; kwargs...)
+f_linear(fraction) = fraction
+linear(;kwargs...) = funcease(f_linear; kwargs...)
 
 f_polyin(fraction, power) = fraction ^ power
 polyin(power; kwargs...) = funcease(f_polyin, power; kwargs...)

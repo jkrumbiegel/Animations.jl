@@ -11,7 +11,7 @@ using Colors: Color, RGB, weighted_color_mean
 
     animation = Animation(
         [kf1, kf2, kf3],
-        [sineio(), linease()]
+        [sineio(), linear()]
     )
 
     @test timestamps(animation) == [1, 3, 6]
@@ -30,7 +30,7 @@ end
 
     @test keyvalues(anim) == [5, 10, 20, 100]
     @test timestamps(anim) == [1, 2, 3, 4]
-    @test easings(anim) == [linease(), saccadic(2), sineio()]
+    @test easings(anim) == [linear(), saccadic(2), sineio()]
 end
 
 @testset "animation creation rel values" begin
@@ -131,7 +131,7 @@ end
     animation = Animation(
         [0, 3],
         [0.0, 1.0],
-        linease(n=3, yoyo=true)
+        linear(n=3, yoyo=true)
     )
 
     results = [0.0, 0.25, 0.5, 0.75, 1.0, 0.75, 0.5, 0.25, 0.0, 0.25, 0.5, 0.75, 1.0]
@@ -143,7 +143,7 @@ end
     animation = Animation(
         [1, 3],
         [0.0, 1.0],
-        linease(n=2, yoyo=true)
+        linear(n=2, yoyo=true)
     )
 
     @test animation.(0:4) == [0, 0, 1, 0, 0]

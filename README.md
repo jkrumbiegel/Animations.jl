@@ -24,7 +24,7 @@ anim = Animation(
     0, 0,
     sineio(n=3, yoyo=true),
     2, 10,
-    linease(),
+    linear(),
     3, 20
 )
 ```
@@ -36,7 +36,7 @@ first version can be easier to understand with multiple timestamps:
 anim = Animation(
     [0, 2, 3],
     [0, 10, 20],
-    [sineio(n=3, yoyo=true), linease()],
+    [sineio(n=3, yoyo=true), linear()],
 )
 ```
 
