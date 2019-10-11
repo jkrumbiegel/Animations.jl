@@ -35,9 +35,13 @@ export Animation,
     update!,
     value
 
+# loop.jl
+export Loop
+
 include("easings.jl")
 include("keyframes.jl")
 include("animation.jl")
 include("interpolation.jl")
+include("loop.jl")
 
 end

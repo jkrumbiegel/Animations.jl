@@ -178,3 +178,36 @@ end
     @test animation(0) == 0
     @test animation(1) == 1
 end
+
+@testset "loop" begin
+    animation = Animation(
+        0, 0.0,
+        sineio(n=2, yoyo=true),
+        2, 1.0
+    )
+    loop = Loop(animation, 0, 1)
+    @test loop(0) == 0
+    @test loop(1) == 1
+    @test loop(2) == 0
+    @test loop(2.5) == 0
+    @test loop(3) == 0
+    @test loop(4) == 1
+    @test loop(5) == 0
+end
+
+@testset "finite loop" begin
+    animation = Animation(
+        0, 0.0,
+        sineio(n=2, yoyo=true),
+        2, 1.0
+    )
+    loop = Loop(animation, 0, 1, 2)
+    @test loop(0) == 0
+    @test loop(1) == 1
+    @test loop(2) == 0
+    @test loop(2.5) == 0
+    @test loop(3) == 0
+    @test loop(4) == 1
+    @test loop(5) == 0
+    @test loop(7) == 0 # two loops done
+end
