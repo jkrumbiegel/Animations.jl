@@ -46,6 +46,8 @@ You can get an animation's value for a specific t by calling it:
 val_1 = anim(t)
 ```
 
+### Colors and special types
+
 Using Colors is enabled already, but you can add other custom types that can be interpolated:
 
 ```julia
@@ -56,8 +58,12 @@ coloranim = Animation(
     polyin(2),
     2, RGB(0, 0, 1)
 )
-
 ```
+
+For your own type T, if the generic `(value2 - value1) * fraction + value1` doesn't work,
+just add a method `linear_interpolate(fraction::Real, value1::T, value2::T) where T`.
+
+### Arrays
 
 Interpolation also works easily with arrays of values:
 
@@ -74,3 +80,40 @@ Here's an example using arrays, in this case a grid of points:
 <p align="center">
     <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example_array.gif">
 </p>
+
+### Relative timestamps
+
+If you're tweaking the length of parts of an animation, you can use `rel()` for
+a timestamp relative to the previous one, like so:
+
+```julia
+Animation(
+    0,        1,
+    rel(1),   2,
+    rel(3),   3,
+    rel(0.2), 0,
+    rel(0.4), 1
+)
+```
+
+This way it's easier to adjust one duration without having to change all following ones.
+
+
+### Loops
+
+You can turn an animation into a loop like this:
+
+```julia
+a = Animation(
+    0,   1,
+    sineio(),
+    0.5, 2,
+    polyin(3),
+    1,   1
+)
+
+start = 0
+gap = 1
+repetitions = nothing # infinite loop
+l = Loop(a, start, gap, repetitions)
+```
