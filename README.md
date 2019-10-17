@@ -137,9 +137,9 @@ anim1 = Animation(
 
 anim2 = Animation(
     0,   1,
-    sineio(),
-    0.5, 2,
-    polyin(3),
+    saccadic(2),
+    0.5, 5,
+    expout(3),
     1,   1
 )
 
