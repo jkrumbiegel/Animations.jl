@@ -11,7 +11,9 @@ can also add your own methods for special types. An easing can have repetitions 
 delays, so that looping animations are simpler to create.
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example.gif">
+    <a href="https://github.com/jkrumbiegel/Animations.jl/blob/master/misc/example.jl">
+        <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example.gif">
+    </a>
 </p>
 
 ### Syntax examples
@@ -78,7 +80,9 @@ Animation(
 Here's an example using arrays, in this case a grid of points:
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example_array.gif">
+    <a href="https://github.com/jkrumbiegel/Animations.jl/blob/master/misc/example_array.jl">
+        <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example_array.gif">
+    </a>
 </p>
 
 ### Relative timestamps
