@@ -75,8 +75,8 @@ funcease(f, args...; kwargs...) = Easing(FuncEasing(f, args); kwargs...)
 f_noease(fraction) = fraction == 1 ? 1 : 0
 noease(;kwargs...) = funcease(f_noease; kwargs...)
 
-f_stepease(fraction) = fraction < 0.5 ? 0 : 1
-stepease(;kwargs...) = funcease(f_stepease; kwargs...)
+f_stepease(fraction, stepfraction) = fraction < stepfraction ? 0 : 1
+stepease(stepfraction; kwargs...) = funcease(f_stepease, stepfraction; kwargs...)
 
 f_sineio(fraction) = sin(pi * fraction - 0.5pi) * 0.5 + 0.5
 sineio(;kwargs...) = funcease(f_sineio; kwargs...)
