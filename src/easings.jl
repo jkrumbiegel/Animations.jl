@@ -93,7 +93,7 @@ polyin(power; kwargs...) = funcease(f_polyin, power; kwargs...)
 polyout(power; kwargs...) = funcease(opposite(f_polyin), power; kwargs...)
 
 f_expin(fraction, exponent) = ((exponent ^ fraction) - 1) / (exponent - 1)
-expin(exponent; kwargs...) = funcease(f_expin, power; kwargs...)
+expin(exponent; kwargs...) = funcease(f_expin, exponent; kwargs...)
 
 expout(exponent; kwargs...) = funcease(opposite(f_expin), exponent; kwargs...)
 
