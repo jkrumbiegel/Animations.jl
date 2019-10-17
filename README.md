@@ -153,6 +153,8 @@ sequence = Sequence([anim1, loop], start, gap)
 
 ### Easing functions
 
+Here are some examples of standard easing functions:
+
 <p align="center">
   <a href="https://github.com/jkrumbiegel/Animations.jl/blob/master/misc/easingplots.jl">
     <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/easingplots.svg?sanitize=true">
