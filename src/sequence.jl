@@ -28,4 +28,6 @@ function at(s::Sequence, t::Real)
     end
 end
 
+(s::Sequence)(t::Real) = at(s, t)
+
 duration(s::Sequence) = sum(s.gaps) + sum(duration.(s.animations))

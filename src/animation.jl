@@ -1,7 +1,6 @@
 abstract type FiniteLengthAnimation{T} end
 
 Base.Broadcast.broadcastable(f::FiniteLengthAnimation) = Ref(f)
-(f::FiniteLengthAnimation)(t::Real) = at(f, t)
 
 struct Animation{T} <: FiniteLengthAnimation{T}
     frames::Vector{Keyframe{T}}
@@ -130,6 +129,8 @@ function at(a::Animation, t::Real)
         return interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
     end
 end
+
+(a::Animation)(t::Real) = at(a, t)
 
 struct Relative
     t::Float64

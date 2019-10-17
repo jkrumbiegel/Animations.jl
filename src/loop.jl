@@ -35,4 +35,6 @@ function at(l::Loop, t::Real)
     end
 end
 
+(l::Loop)(t::Real) = at(l, t)
+
 duration(l::Loop) = (duration(l.animation) + l.gap) * l.repetitions
