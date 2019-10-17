@@ -98,10 +98,14 @@ Animation(
 
 This way it's easier to adjust one duration without having to change all following ones.
 
+### FiniteLengthAnimation
+
+Animations, Loops and Sequences are subtypes of FiniteLengthAnimation, which are
+required as the content for (finite) Loops and Sequences
 
 ### Loops
 
-You can turn an animation into a loop like this:
+You can turn a FiniteLengthAnimation into a loop like this:
 
 ```julia
 a = Animation(
@@ -114,6 +118,34 @@ a = Animation(
 
 start = 0
 gap = 1
-repetitions = nothing # infinite loop
+repetitions = 3
 l = Loop(a, start, gap, repetitions)
+```
+
+### Sequences
+
+You can string together FiniteLengthAnimations into sequences like this:
+
+```julia
+anim1 = Animation(
+    0,   1,
+    sineio(),
+    0.5, 2,
+    polyin(3),
+    1,   1
+)
+
+anim2 = Animation(
+    0,   1,
+    sineio(),
+    0.5, 2,
+    polyin(3),
+    1,   1
+)
+
+loop = Loop(anim2, 0, 0.5, 3)
+
+start = 0
+gap = 1
+sequence = Sequence([anim1, loop], start, gap)
 ```
