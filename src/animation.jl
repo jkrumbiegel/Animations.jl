@@ -1,12 +1,13 @@
-struct Animation{T}
-    obs::Observables.Observable{T}
+abstract type FiniteLengthAnimation{T} end
+
+Base.Broadcast.broadcastable(f::FiniteLengthAnimation) = Ref(f)
+(f::FiniteLengthAnimation)(t::Real) = at(f, t)
+
+struct Animation{T} <: FiniteLengthAnimation{T}
     frames::Vector{Keyframe{T}}
     easings::Vector{<:Easing}
 
     function Animation(kfs::Vector{Keyframe{T}}, easings::Vector{<:Easing}) where T
-
-        # create the observable from the first value
-        obs = Observables.Observable{T}(kfs[1].value)
 
         validate_keyframe_times(kfs)
 
@@ -18,7 +19,7 @@ struct Animation{T}
                 """)
         end
 
-        new{T}(obs, kfs, easings)
+        new{T}(kfs, easings)
     end
 end
 
@@ -99,8 +100,6 @@ function Animation(args...; defaulteasing=Easing())
     Animation(timestamps, values, easings)
 end
 
-Base.Broadcast.broadcastable(a::Animation) = Ref(a)
-
 Base.:+(a::Animation, t::Real) = Animation(a.frames .+ t, a.easings)
 Base.:-(a::Animation, t::Real) = Animation(a.frames .- t, a.easings)
 Base.:*(a::Animation, stretch::Real) = Animation(a.frames .* stretch, a.easings)
@@ -132,21 +131,6 @@ function at(a::Animation, t::Real)
     end
 end
 
-function (a::Animation)(t::Real)
-    at(a, t)
-end
-
-function update!(a::Animation, t::Real)
-    observable(a)[] = at(a, t)
-end
-
-Observables.on(f::Function, a::Animation) = Observables.on(f, observable(a))
-
-value(a::Animation) = observable(a)[]
-
-observable(a::Animation) = a.obs
-
-
 struct Relative
     t::Float64
 
@@ -159,3 +143,7 @@ struct Relative
 end
 
 rel(t::Real) = Relative(t)
+
+start(a::Animation) = a.frames[1].t
+stop(a::Animation) = a.frames[end].t
+duration(a::Animation) = stop(a) - start(a)

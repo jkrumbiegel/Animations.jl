@@ -1,6 +1,5 @@
 module Animations
 
-import Observables
 import Colors
 
 # easings.jl
@@ -29,19 +28,20 @@ export Animation,
     easings,
     keyframes,
     keyvalues,
-    observable,
     rel,
-    timestamps,
-    update!,
-    value
+    timestamps
 
 # loop.jl
 export Loop
+
+# sequence.jl
+export Sequence
 
 include("easings.jl")
 include("keyframes.jl")
 include("animation.jl")
 include("interpolation.jl")
 include("loop.jl")
+include("sequence.jl")
 
 end

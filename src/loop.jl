@@ -1,10 +1,10 @@
-struct Loop{T}
-    animation::Animation{T}
+struct Loop{T} <: FiniteLengthAnimation{T}
+    animation::FiniteLengthAnimation{T}
     start::Float64
     gap::Float64
     repetitions::Int
 
-    function Loop(a::Animation{T}, start::Real, gap::Real, repetitions::Int) where T
+    function Loop(a::FiniteLengthAnimation{T}, tstart::Real, gap::Real, repetitions::Int) where T
         if gap < 0
             error("Gap cannot be smaller than zero, but is $gap")
         end
@@ -14,18 +14,18 @@ struct Loop{T}
         end
 
         # animation should start at zero
-        if timestamps(a)[1] != 0
-            error("First timestamp of an animation in a loop must be 0, not $(timestamps(a)[1]).")
+        if start(a) != 0
+            error("First timestamp of an animation in a loop must be 0, not $(start(a)).")
         end
 
-        new{T}(a, start, gap, repetitions)
+        new{T}(a, tstart, gap, repetitions)
     end
 end
 
 
 function at(l::Loop, t::Real)
-    duration = keyframes(l.animation)[end].t
-    duration_gapped = duration + l.gap
+    s = stop(l.animation)
+    duration_gapped = s + l.gap
 
     n_repetitions_done, t_within_animation = divrem(t - l.start, duration_gapped)
     if n_repetitions_done >= l.repetitions
@@ -35,6 +35,4 @@ function at(l::Loop, t::Real)
     end
 end
 
-(l::Loop)(t::Real) = at(l, t)
-
-Base.Broadcast.broadcastable(l::Loop) = Ref(l)
+duration(l::Loop) = (duration(l.animation) + l.gap) * l.repetitions

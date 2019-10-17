@@ -1,7 +1,6 @@
 using Test
 using Animations
-using Observables
-using Colors: Color, RGB, weighted_color_mean
+using Colors
 
 @testset "keyframes" begin
 
@@ -194,4 +193,52 @@ end
     @test loop(4) == 1
     @test loop(5) == 0
     @test loop(7) == 0 # two loops done
+end
+
+@testset "sequence" begin
+    anim1 = Animation(
+        0, 0.0,
+        1, 1.0,
+    )
+    anim2 = Animation(
+        0, 1.0,
+        1, 0.0
+    )
+    sequence = Sequence([anim1, anim2], 1, 1)
+    @test sequence(0) == 0.0
+    @test sequence(1) == 0.0
+    @test sequence(1.5) == 0.5
+    @test sequence(2) == 1.0
+    @test sequence(2.5) == 1.0
+    @test sequence(3) == 1.0
+    @test sequence(3.5) == 0.5
+    @test sequence(4) == 0.0
+    @test sequence(5) == 0.0
+end
+
+@testset "sequence with loop" begin
+    anim1 = Animation(
+        0, 0.0,
+        1, 1.0,
+    )
+    anim2 = Animation(
+        0, 1.0,
+        1, 0.0
+    )
+    loop = Loop(anim2, 0, 1, 2)
+    sequence = Sequence([anim1, loop], 1, 1)
+    @test sequence(0) == 0.0
+    @test sequence(1) == 0.0
+    @test sequence(1.5) == 0.5
+    @test sequence(2) == 1.0
+    @test sequence(2.5) == 1.0
+    # start of loop
+    @test sequence(3) == 1.0
+    @test sequence(3.5) == 0.5
+    @test sequence(4) == 0.0
+    @test sequence(4.5) == 0.0
+    @test sequence(5) == 1.0
+    @test sequence(5.5) == 0.5
+    @test sequence(6) == 0.0
+    @test sequence(7) == 0.0
 end
