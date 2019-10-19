@@ -2,6 +2,11 @@ abstract type FiniteLengthAnimation{T} end
 
 Base.Broadcast.broadcastable(f::FiniteLengthAnimation) = Ref(f)
 
+"""
+`Animation{T}`
+
+An Animation that contains a `Vector` of `Keyframe`s and a `Vector` of `Easing`s
+"""
 struct Animation{T} <: FiniteLengthAnimation{T}
     frames::Vector{Keyframe{T}}
     easings::Vector{<:Easing}
@@ -27,6 +32,12 @@ function Animation(differenttype_kfs::Vector{Keyframe}, easings::Vector{Easing})
     error("""All keyframes need the same parametric type. Types are:\n$types""")
 end
 
+"""
+`Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T`
+
+Create an `Animation` from a `Vector` of `Keyframe`s and one `Easing` that is repeated
+for every pair of keyframes.
+"""
 function Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T
     if length(kfs) <= 1
         error("There must be at least two keyframes.")
