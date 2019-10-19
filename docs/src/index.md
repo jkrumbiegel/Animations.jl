@@ -6,6 +6,11 @@ create your own. Keyframe values can be anything that can be linearly interpolat
 can also add your own methods for special types. An easing can have repetitions and
 delays, so that looping animations are simpler to create.
 
+### Basic principle
+
+An Animation consists of keyframes that each have a time stamp and a value. That
+value must be of the same type for all keyframes.
+
 ### Syntax examples
 
 Creating an animation from 0 at t = 0, to 10 at t = 2, and then 20 at t = 3,
