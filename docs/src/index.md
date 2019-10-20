@@ -4,8 +4,8 @@
 ```
 
 ```@eval
-using PyCall
-pyimport_conda("matplotlib.pyplot", "matplotlib")
+using Conda
+Conda.add("matplotlib")
 ```
 
 Animations.jl offers an easy way to set up simple animations where multiple keyframes
