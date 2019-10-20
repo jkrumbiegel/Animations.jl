@@ -1,23 +1,91 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Animations.jl · Animations.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Animations.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Animations.jl</a><ul class="internal"><li><a class="toctext" href="#Animations-1">Animations</a></li><li><a class="toctext" href="#Easings-1">Easings</a></li><li><a class="toctext" href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></li><li><a class="toctext" href="#Colors-and-special-types-1">Colors and special types</a></li><li><a class="toctext" href="#Arrays-1">Arrays</a></li><li><a class="toctext" href="#Relative-timestamps-1">Relative timestamps</a></li><li><a class="toctext" href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></li><li><a class="toctext" href="#Loops-1">Loops</a></li><li><a class="toctext" href="#Sequences-1">Sequences</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Animations.jl</a></li></ul><a class="edit-page" href="https://github.com/jkrumbiegel/Animations.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Animations.jl</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Animations.jl-1" href="#Animations.jl-1">Animations.jl</a></h1><ul><li><a href="#Animations.jl-1">Animations.jl</a></li><ul><li><a href="#Animations-1">Animations</a></li><li><a href="#Easings-1">Easings</a></li><li><a href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></li><li><a href="#Colors-and-special-types-1">Colors and special types</a></li><li><a href="#Arrays-1">Arrays</a></li><li><a href="#Relative-timestamps-1">Relative timestamps</a></li><li><a href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></li><li><a href="#Loops-1">Loops</a></li><li><a href="#Sequences-1">Sequences</a></li></ul></ul><p>Animations.jl offers an easy way to set up simple animations where multiple keyframes are interpolated between in sequence. You can choose different easing functions or create your own. Keyframe values can be anything that can be linearly interpolated, you can also add your own methods for special types. An easing can have repetitions and delays, so that looping animations are simpler to create.</p><h2><a class="nav-anchor" id="Animations-1" href="#Animations-1">Animations</a></h2><p>An <code>Animation</code> consists of <code>Keyframe</code>s that each have a time stamp and a value. That value must be of the same type for all keyframes. For each pair of consecutive keyframes the animation also contains an <code>Easing</code>. This easing determines how values between two keyframes are interpolated over time. You generally don&#39;t have to construct keyframes yourself, there are a few constructor functions for <code>Animation</code> that are easier to use.</p><p>Here we create an animation that starts at the value 1 at time t = 0, then goes to to 2 at t = 1, and then 3 at t = 2. Between the first two keyframes we use a sine in / out easing, and between the next two a linear easing.</p><pre><code class="language-">using PyPlot # hide
-using Animations
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Animations.jl · Animations.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Animations.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Animations.jl</a><ul class="internal"><li><a class="toctext" href="#Animations-1">Animations</a></li><li><a class="toctext" href="#Easings-1">Easings</a></li><li><a class="toctext" href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></li><li><a class="toctext" href="#Colors-and-special-types-1">Colors and special types</a></li><li><a class="toctext" href="#Arrays-1">Arrays</a></li><li><a class="toctext" href="#Relative-timestamps-1">Relative timestamps</a></li><li><a class="toctext" href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></li><li><a class="toctext" href="#Loops-1">Loops</a></li><li><a class="toctext" href="#Sequences-1">Sequences</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Animations.jl</a></li></ul><a class="edit-page" href="https://github.com/jkrumbiegel/Animations.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Animations.jl</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Animations.jl-1" href="#Animations.jl-1">Animations.jl</a></h1><ul><li><a href="#Animations.jl-1">Animations.jl</a></li><ul><li><a href="#Animations-1">Animations</a></li><li><a href="#Easings-1">Easings</a></li><li><a href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></li><li><a href="#Colors-and-special-types-1">Colors and special types</a></li><li><a href="#Arrays-1">Arrays</a></li><li><a href="#Relative-timestamps-1">Relative timestamps</a></li><li><a href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></li><li><a href="#Loops-1">Loops</a></li><li><a href="#Sequences-1">Sequences</a></li></ul></ul><p>Animations.jl offers an easy way to set up simple animations where multiple keyframes are interpolated between in sequence. You can choose different easing functions or create your own. Keyframe values can be anything that can be linearly interpolated, you can also add your own methods for special types. An easing can have repetitions and delays, so that looping animations are simpler to create.</p><h2><a class="nav-anchor" id="Animations-1" href="#Animations-1">Animations</a></h2><p>An <code>Animation</code> consists of <code>Keyframe</code>s that each have a time stamp and a value. That value must be of the same type for all keyframes. For each pair of consecutive keyframes the animation also contains an <code>Easing</code>. This easing determines how values between two keyframes are interpolated over time. You generally don&#39;t have to construct keyframes yourself, there are a few constructor functions for <code>Animation</code> that are easier to use.</p><p>Here we create an animation that starts at the value 1 at time t = 0, then goes to to 2 at t = 1, and then 3 at t = 2. Between the first two keyframes we use a sine in / out easing, and between the next two a linear easing.</p><pre><code class="language-julia">using Animations
 anim = Animation(
     0, 1, # t = 0, value = 1
     sineio(),
     1, 2, # t = 1, value = 2
     linear(),
     2, 3  # t = 2, value = 3
-)
-nothing  # hide</code></pre><p>Because we are just interpolating numbers, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-">ts = 0:0.01:2
+)</code></pre><pre><code class="language-none">[ Info: Installing matplotlib via the Conda matplotlib package...
+[ Info: Running `conda install -q -y matplotlib` in root environment
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /home/travis/.julia/conda/3
+
+  added / updated specs:
+    - matplotlib
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    cycler-0.10.0              |           py37_0          13 KB
+    dbus-1.13.6                |       h746ee38_0         499 KB
+    expat-2.2.6                |       he6710b0_0         146 KB
+    fontconfig-2.13.0          |       h9420a91_0         227 KB
+    freetype-2.9.1             |       h8a8886c_1         550 KB
+    glib-2.56.2                |       hd408876_0         3.9 MB
+    gst-plugins-base-1.14.0    |       hbbd80ab_1         4.8 MB
+    gstreamer-1.14.0           |       hb453b48_1         3.1 MB
+    icu-58.2                   |       h9c2bf20_1        10.3 MB
+    jpeg-9b                    |       h024ee3a_2         214 KB
+    kiwisolver-1.1.0           |   py37he6710b0_0          82 KB
+    libpng-1.6.37              |       hbc83047_0         278 KB
+    libuuid-1.0.3              |       h1bed415_2          15 KB
+    libxcb-1.13                |       h1bed415_1         421 KB
+    libxml2-2.9.9              |       hea5a465_1         1.6 MB
+    matplotlib-3.1.1           |   py37h5429711_0         5.0 MB
+    pcre-8.43                  |       he6710b0_0         209 KB
+    pyparsing-2.4.2            |             py_0          61 KB
+    pyqt-5.9.2                 |   py37h05f1152_2         4.5 MB
+    python-dateutil-2.8.0      |           py37_0         266 KB
+    pytz-2019.3                |             py_0         231 KB
+    qt-5.9.7                   |       h5867ecd_1        68.5 MB
+    sip-4.19.8                 |   py37hf484d3e_0         274 KB
+    tornado-6.0.3              |   py37h7b6447c_0         584 KB
+    ------------------------------------------------------------
+                                           Total:       105.6 MB
+
+The following NEW packages will be INSTALLED:
+
+  cycler             pkgs/main/linux-64::cycler-0.10.0-py37_0
+  dbus               pkgs/main/linux-64::dbus-1.13.6-h746ee38_0
+  expat              pkgs/main/linux-64::expat-2.2.6-he6710b0_0
+  fontconfig         pkgs/main/linux-64::fontconfig-2.13.0-h9420a91_0
+  freetype           pkgs/main/linux-64::freetype-2.9.1-h8a8886c_1
+  glib               pkgs/main/linux-64::glib-2.56.2-hd408876_0
+  gst-plugins-base   pkgs/main/linux-64::gst-plugins-base-1.14.0-hbbd80ab_1
+  gstreamer          pkgs/main/linux-64::gstreamer-1.14.0-hb453b48_1
+  icu                pkgs/main/linux-64::icu-58.2-h9c2bf20_1
+  jpeg               pkgs/main/linux-64::jpeg-9b-h024ee3a_2
+  kiwisolver         pkgs/main/linux-64::kiwisolver-1.1.0-py37he6710b0_0
+  libpng             pkgs/main/linux-64::libpng-1.6.37-hbc83047_0
+  libuuid            pkgs/main/linux-64::libuuid-1.0.3-h1bed415_2
+  libxcb             pkgs/main/linux-64::libxcb-1.13-h1bed415_1
+  libxml2            pkgs/main/linux-64::libxml2-2.9.9-hea5a465_1
+  matplotlib         pkgs/main/linux-64::matplotlib-3.1.1-py37h5429711_0
+  pcre               pkgs/main/linux-64::pcre-8.43-he6710b0_0
+  pyparsing          pkgs/main/noarch::pyparsing-2.4.2-py_0
+  pyqt               pkgs/main/linux-64::pyqt-5.9.2-py37h05f1152_2
+  python-dateutil    pkgs/main/linux-64::python-dateutil-2.8.0-py37_0
+  pytz               pkgs/main/noarch::pytz-2019.3-py_0
+  qt                 pkgs/main/linux-64::qt-5.9.7-h5867ecd_1
+  sip                pkgs/main/linux-64::sip-4.19.8-py37hf484d3e_0
+  tornado            pkgs/main/linux-64::tornado-6.0.3-py37h7b6447c_0
+
+
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done</code></pre><p>Because we are just interpolating numbers, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-julia">ts = 0:0.01:2
 ys = at.(anim, ts)
 
-rc(&quot;font&quot;, size = 10, family = &quot;Arial&quot;) # hide
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-tight_layout() # hide
-savefig(&quot;example_1.svg&quot;); nothing # hide</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><pre><code class="language-none">findfont: Font family [&#39;Arial&#39;] not found. Falling back to DejaVu Sans.</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
     [0, 2, 3],
     [0, 10, 20],
     [sineio(), linear()],
@@ -32,8 +100,7 @@ savefig(&quot;example_1.svg&quot;); nothing # hide</code></pre><p><img src="exam
     [0, 1, 2],
     [1, 2, 3],
     sineio() # note the single easing instead of a vector
-)</code></pre><h2><a class="nav-anchor" id="Easings-1" href="#Easings-1">Easings</a></h2><p>Easings determine how keyframes are interpolated between. The are (usually) functions that go from 0 to 1, and their curvature decides velocity and acceleration of the animation. There are multiple predefined easing functions, some of which take parameters:</p><p><img src="easingplots.svg" alt/></p><h2><a class="nav-anchor" id="Repeats,-Yoyo,-Pre-and-Postwait-1" href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></h2><p>Often you have two values that you interpolate between, but you want a more interesting animation than just going from a to b. Each easing function takes four keyword arguments that you can use for that, <code>n</code>, <code>yoyo</code>, <code>prewait</code> and <code>postwait</code>.</p><h3><a class="nav-anchor" id="Repeats-1" href="#Repeats-1">Repeats</a></h3><p>Use the <code>n</code> keyword for repeats:</p><pre><code class="language-">
-anim = Animation(
+)</code></pre><h2><a class="nav-anchor" id="Easings-1" href="#Easings-1">Easings</a></h2><p>Easings determine how keyframes are interpolated between. The are (usually) functions that go from 0 to 1, and their curvature decides velocity and acceleration of the animation. There are multiple predefined easing functions, some of which take parameters:</p><p><img src="easingplots.svg" alt/></p><h2><a class="nav-anchor" id="Repeats,-Yoyo,-Pre-and-Postwait-1" href="#Repeats,-Yoyo,-Pre-and-Postwait-1">Repeats, Yoyo, Pre- and Postwait</a></h2><p>Often you have two values that you interpolate between, but you want a more interesting animation than just going from a to b. Each easing function takes four keyword arguments that you can use for that, <code>n</code>, <code>yoyo</code>, <code>prewait</code> and <code>postwait</code>.</p><h3><a class="nav-anchor" id="Repeats-1" href="#Repeats-1">Repeats</a></h3><p>Use the <code>n</code> keyword for repeats:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(n=3),
     2, 1
@@ -42,13 +109,9 @@ anim = Animation(
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-tight_layout() # hide
-savefig(&quot;example_n_keyword.svg&quot;); nothing # hide</code></pre><p><img src="example_n_keyword.svg" alt/></p><h3><a class="nav-anchor" id="Yoyo-1" href="#Yoyo-1">Yoyo</a></h3><p>As you can see, repeats lead to breaks in the animation, which might be what you want, but often you want a back-and-forth motion between two values, like a yoyo. That&#39;s what the <code>yoyo</code> parameter is for:</p><pre><code class="language-">
-anim = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_n_keyword.svg" alt/></p><h3><a class="nav-anchor" id="Yoyo-1" href="#Yoyo-1">Yoyo</a></h3><p>As you can see, repeats lead to breaks in the animation, which might be what you want, but often you want a back-and-forth motion between two values, like a yoyo. That&#39;s what the <code>yoyo</code> parameter is for:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(n=3, yoyo=true),
     2, 1
@@ -57,13 +120,9 @@ anim = Animation(
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-tight_layout() # hide
-savefig(&quot;example_yoyo.svg&quot;); nothing # hide</code></pre><p><img src="example_yoyo.svg" alt/></p><p>Only if n is an odd number does an animation with yoyo end with the second keyframe value, otherwise it ends with the first. This is something to keep in mind. If you have a keyframe following after, you might want an odd number of repeats so there is no break, if you just want a looping animation without a break, you might want to choose an even number. Also, if you retrieve values from an animation for timestamps outside of its keyframes, all values before the first keyframe are the same as the first computed value, and all values after are the same as the last computed value, not the actual keyframe values. This is only relevant if you use even-numbered yoyo&#39;s though, which often happens with looping animations. See the difference here:</p><pre><code class="language-">
-anim_even = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_yoyo.svg" alt/></p><p>Only if n is an odd number does an animation with yoyo end with the second keyframe value, otherwise it ends with the first. This is something to keep in mind. If you have a keyframe following after, you might want an odd number of repeats so there is no break, if you just want a looping animation without a break, you might want to choose an even number. Also, if you retrieve values from an animation for timestamps outside of its keyframes, all values before the first keyframe are the same as the first computed value, and all values after are the same as the last computed value, not the actual keyframe values. This is only relevant if you use even-numbered yoyo&#39;s though, which often happens with looping animations. See the difference here:</p><pre><code class="language-julia">anim_even = Animation(
     0, 0,
     linear(n=4, yoyo=true),
     2, 1
@@ -79,17 +138,12 @@ ts = -0.5:0.01:3
 ys_even = at.(anim_even, ts)
 ys_odd = at.(anim_odd, ts)
 
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys_even, label=&quot;even&quot;)
 plot(ts, ys_odd, label=&quot;odd&quot;)
 xlabel(&quot;t&quot;)
 ylabel(&quot;animation value&quot;)
 axvline(0, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;)
-axvline(2, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;, label=&quot;keyframes&quot;)
-legend(loc=&quot;center&quot;, bbox_to_anchor=(1, 0.5), frameon=false) # hide
-tight_layout() # hide
-savefig(&quot;example_yoyo_evenodd.svg&quot;); nothing # hide</code></pre><p><img src="example_yoyo_evenodd.svg" alt/></p><h3><a class="nav-anchor" id="Prewait-and-Postwait-1" href="#Prewait-and-Postwait-1">Prewait and Postwait</a></h3><p>Especially with yoyo animations, it often looks better if there is a slight moment of rest at the endpoints. You can easily achieve this with the <code>prewait</code> and <code>postwait</code> keywords. Their values are given in fractions of keyframe to keyframe duration, so <code>prewait = 0.5</code> means the actual animation happens only in the second half. Here&#39;s an example:</p><pre><code class="language-">
-anim = Animation(
+axvline(2, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;, label=&quot;keyframes&quot;)</code></pre><p><img src="example_yoyo_evenodd.svg" alt/></p><h3><a class="nav-anchor" id="Prewait-and-Postwait-1" href="#Prewait-and-Postwait-1">Prewait and Postwait</a></h3><p>Especially with yoyo animations, it often looks better if there is a slight moment of rest at the endpoints. You can easily achieve this with the <code>prewait</code> and <code>postwait</code> keywords. Their values are given in fractions of keyframe to keyframe duration, so <code>prewait = 0.5</code> means the actual animation happens only in the second half. Here&#39;s an example:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(prewait=0.1, postwait=0.3),
     2, 1
@@ -98,13 +152,9 @@ anim = Animation(
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-tight_layout() # hide
-savefig(&quot;example_prepostwait.svg&quot;); nothing # hide</code></pre><p><img src="example_prepostwait.svg" alt/></p><p>If you use repeat or yoyo, each prewait and postwait period is just divided by the number of repeats:</p><pre><code class="language-">
-anim = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait.svg" alt/></p><p>If you use repeat or yoyo, each prewait and postwait period is just divided by the number of repeats:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(prewait=0.1, postwait=0.3, n=2, yoyo=true),
     2, 1
@@ -113,12 +163,9 @@ anim = Animation(
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-tight_layout() # hide
-savefig(&quot;example_prepostwait_yoyo.svg&quot;); nothing # hide</code></pre><p><img src="example_prepostwait_yoyo.svg" alt/></p><h2><a class="nav-anchor" id="Colors-and-special-types-1" href="#Colors-and-special-types-1">Colors and special types</a></h2><p>Using Colors is enabled already, but you can add other custom types that can be interpolated:</p><pre><code class="language-julia">coloranim = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait_yoyo.svg" alt/></p><h2><a class="nav-anchor" id="Colors-and-special-types-1" href="#Colors-and-special-types-1">Colors and special types</a></h2><p>Using Colors is enabled already, but you can add other custom types that can be interpolated:</p><pre><code class="language-julia">coloranim = Animation(
     0, RGB(1, 0, 0),
     sineio(),
     1, RGB(0, 1, 0),
