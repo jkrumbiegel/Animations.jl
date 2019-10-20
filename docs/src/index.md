@@ -3,11 +3,6 @@
 ```@contents
 ```
 
-```@eval
-using Conda
-Conda.add("matplotlib")
-```
-
 Animations.jl offers an easy way to set up simple animations where multiple keyframes
 are interpolated between in sequence. You can choose different easing functions or
 create your own. Keyframe values can be anything that can be linearly interpolated, you
