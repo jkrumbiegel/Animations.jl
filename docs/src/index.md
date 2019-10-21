@@ -136,8 +136,8 @@ anim = Animation(
 
 ## Easings
 
-Easings determine how keyframes are interpolated between. The are (usually) functions that go
-from 0 to 1, and their curvature decides velocity and acceleration of the animation.
+Easings determine how keyframes are interpolated between. These are (usually) functions that go
+from 0 to 1 over the range from 0 to 1, and their curvature decides velocity and acceleration of the animation.
 There are multiple predefined easing functions, some of which take parameters:
 
 ```@eval
