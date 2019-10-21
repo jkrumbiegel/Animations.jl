@@ -6,12 +6,10 @@ anim = Animation(
     1, 2, # t = 1, value = 2
     linear(),
     2, 3  # t = 2, value = 3
-)</code></pre><p>Because we are just interpolating numbers, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-julia">ts = 0:0.01:2
+)</code></pre><p>Because we are just interpolating numbers in most examples here, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-julia">ts = 0:0.01:2
 ys = at.(anim, ts)
 
-plot(ts, ys)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
+plot(ts, ys)</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
     [0, 2, 3],
     [0, 10, 20],
     [sineio(), linear()],
@@ -35,9 +33,7 @@ ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_1.svg" alt/
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-plot(ts, ys)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_n_keyword.svg" alt/></p><h3><a class="nav-anchor" id="Yoyo-1" href="#Yoyo-1">Yoyo</a></h3><p>As you can see, repeats lead to breaks in the animation, which might be what you want, but often you want a back-and-forth motion between two values, like a yoyo. That&#39;s what the <code>yoyo</code> parameter is for:</p><pre><code class="language-julia">anim = Animation(
+plot(ts, ys)</code></pre><p><img src="example_n_keyword.svg" alt/></p><h3><a class="nav-anchor" id="Yoyo-1" href="#Yoyo-1">Yoyo</a></h3><p>As you can see, repeats lead to breaks in the animation, which might be what you want, but often you want a back-and-forth motion between two values, like a yoyo. That&#39;s what the <code>yoyo</code> parameter is for:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(n=3, yoyo=true),
     2, 1
@@ -46,9 +42,7 @@ ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_n_keyword.s
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-plot(ts, ys)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_yoyo.svg" alt/></p><p>Only if n is an odd number does an animation with yoyo end with the second keyframe value, otherwise it ends with the first. This is something to keep in mind. If you have a keyframe following after, you might want an odd number of repeats so there is no break, if you just want a looping animation without a break, you might want to choose an even number. Also, if you retrieve values from an animation for timestamps outside of its keyframes, all values before the first keyframe are the same as the first computed value, and all values after are the same as the last computed value, not the actual keyframe values. This is only relevant if you use even-numbered yoyo&#39;s though, which often happens with looping animations. See the difference here:</p><pre><code class="language-julia">anim_even = Animation(
+plot(ts, ys)</code></pre><p><img src="example_yoyo.svg" alt/></p><p>Only if n is an odd number does an animation with yoyo end with the second keyframe value, otherwise it ends with the first. This is something to keep in mind. If you have a keyframe following after, you might want an odd number of repeats so there is no break, if you just want a looping animation without a break, you might want to choose an even number. Also, if you retrieve values from an animation for timestamps outside of its keyframes, all values before the first keyframe are the same as the first computed value, and all values after are the same as the last computed value, not the actual keyframe values. This is only relevant if you use even-numbered yoyo&#39;s though, which often happens with looping animations. See the difference here:</p><pre><code class="language-julia">anim_even = Animation(
     0, 0,
     linear(n=4, yoyo=true),
     2, 1
@@ -65,11 +59,7 @@ ys_even = at.(anim_even, ts)
 ys_odd = at.(anim_odd, ts)
 
 plot(ts, ys_even, label=&quot;even&quot;)
-plot(ts, ys_odd, label=&quot;odd&quot;)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)
-axvline(0, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;)
-axvline(2, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;, label=&quot;keyframes&quot;)</code></pre><p><img src="example_yoyo_evenodd.svg" alt/></p><h3><a class="nav-anchor" id="Prewait-and-Postwait-1" href="#Prewait-and-Postwait-1">Prewait and Postwait</a></h3><p>Especially with yoyo animations, it often looks better if there is a slight moment of rest at the endpoints. You can easily achieve this with the <code>prewait</code> and <code>postwait</code> keywords. Their values are given in fractions of keyframe to keyframe duration, so <code>prewait = 0.5</code> means the actual animation happens only in the second half. Here&#39;s an example:</p><pre><code class="language-julia">anim = Animation(
+plot(ts, ys_odd, label=&quot;odd&quot;)</code></pre><p><img src="example_yoyo_evenodd.svg" alt/></p><h3><a class="nav-anchor" id="Prewait-and-Postwait-1" href="#Prewait-and-Postwait-1">Prewait and Postwait</a></h3><p>Especially with yoyo animations, it often looks better if there is a slight moment of rest at the endpoints. You can easily achieve this with the <code>prewait</code> and <code>postwait</code> keywords. Their values are given in fractions of keyframe to keyframe duration, so <code>prewait = 0.5</code> means the actual animation happens only in the second half. Here&#39;s an example:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(prewait=0.1, postwait=0.3),
     2, 1
@@ -78,9 +68,7 @@ axvline(2, 0, 1, color=&quot;gray&quot;, linestyle=&quot;dashed&quot;, label=&qu
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-plot(ts, ys)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait.svg" alt/></p><p>If you use repeat or yoyo, each prewait and postwait period is just divided by the number of repeats:</p><pre><code class="language-julia">anim = Animation(
+plot(ts, ys)</code></pre><p><img src="example_prepostwait.svg" alt/></p><p>If you use repeat or yoyo, each prewait and postwait period is just divided by the number of repeats:</p><pre><code class="language-julia">anim = Animation(
     0, 0,
     linear(prewait=0.1, postwait=0.3, n=2, yoyo=true),
     2, 1
@@ -89,9 +77,7 @@ ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-plot(ts, ys)
-xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait_yoyo.svg" alt/></p><h2><a class="nav-anchor" id="Colors-and-special-types-1" href="#Colors-and-special-types-1">Colors and special types</a></h2><p>Using Colors is enabled already, but you can add other custom types that can be interpolated:</p><pre><code class="language-julia">coloranim = Animation(
+plot(ts, ys)</code></pre><p><img src="example_prepostwait_yoyo.svg" alt/></p><h2><a class="nav-anchor" id="Colors-and-special-types-1" href="#Colors-and-special-types-1">Colors and special types</a></h2><p>Using Colors is enabled already, but you can add other custom types that can be interpolated:</p><pre><code class="language-julia">coloranim = Animation(
     0, RGB(1, 0, 0),
     sineio(),
     1, RGB(0, 1, 0),
@@ -107,7 +93,7 @@ ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait
     rel(3),   3,
     rel(0.2), 0,
     rel(0.4), 1
-)</code></pre><p>This way it&#39;s easier to adjust one duration without having to change all following ones.</p><h2><a class="nav-anchor" id="FiniteLengthAnimation-1" href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></h2><p>Animations, Loops and Sequences are subtypes of FiniteLengthAnimation, which are required as the content for (finite) Loops and Sequences</p><h2><a class="nav-anchor" id="Loops-1" href="#Loops-1">Loops</a></h2><p>You can turn a FiniteLengthAnimation into a loop like this:</p><pre><code class="language-julia">a = Animation(
+)</code></pre><p>This way it&#39;s easier to adjust one duration without having to change all following ones.</p><h2><a class="nav-anchor" id="FiniteLengthAnimation-1" href="#FiniteLengthAnimation-1">FiniteLengthAnimation</a></h2><p>Animations, Loops and Sequences are subtypes of FiniteLengthAnimation, which are required as the content for (finite) Loops and Sequences</p><h2><a class="nav-anchor" id="Loops-1" href="#Loops-1">Loops</a></h2><p>You can turn a FiniteLengthAnimation into a loop like this:</p><pre><code class="language-julia">anim = Animation(
     0,   1,
     sineio(),
     0.5, 2,
@@ -118,7 +104,12 @@ ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_prepostwait
 start = 0
 gap = 1
 repetitions = 3
-l = Loop(a, start, gap, repetitions)</code></pre><h2><a class="nav-anchor" id="Sequences-1" href="#Sequences-1">Sequences</a></h2><p>You can string together FiniteLengthAnimations into sequences like this:</p><pre><code class="language-julia">anim1 = Animation(
+loop = Loop(anim, start, gap, repetitions)
+
+ts = 0:0.01:6
+ys = at.(loop, ts)
+
+plot(ts, ys)</code></pre><p><img src="example_loop.svg" alt/></p><h2><a class="nav-anchor" id="Sequences-1" href="#Sequences-1">Sequences</a></h2><p>You can string together FiniteLengthAnimations into sequences like this:</p><pre><code class="language-julia">anim1 = Animation(
     0,   1,
     sineio(),
     0.5, 2,
@@ -129,7 +120,7 @@ l = Loop(a, start, gap, repetitions)</code></pre><h2><a class="nav-anchor" id="S
 anim2 = Animation(
     0,   1,
     saccadic(2),
-    0.5, 5,
+    0.5, 3,
     expout(3),
     1,   1
 )
@@ -138,4 +129,9 @@ loop = Loop(anim2, 0, 0.5, 3)
 
 start = 0
 gap = 1
-sequence = Sequence([anim1, loop], start, gap)</code></pre><footer><hr/></footer></article></body></html>
+sequence = Sequence([anim1, loop], start, gap)
+
+ts = 0:0.01:6
+ys = at.(sequence, ts)
+
+plot(ts, ys)</code></pre><p><img src="example_sequence.svg" alt/></p><footer><hr/></footer></article></body></html>
