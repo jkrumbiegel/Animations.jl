@@ -70,7 +70,7 @@ anim = Animation(
 nothing  # hide
 ```
 
-Because we are just interpolating numbers, we can plot them to visualize what the
+Because we are just interpolating numbers in most examples here, we can plot them to visualize what the
 result of the animation is. To get the value of the animation at some time `t` we
 use the `at()` function.
 
@@ -80,8 +80,8 @@ ys = at.(anim, ts)
 
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
-xlabel("t")
-ylabel("animation value")
+xlabel("t") # hide
+ylabel("animation value") # hide
 tight_layout() # hide
 savefig("example_1.svg"); nothing # hide
 ```
@@ -213,8 +213,8 @@ ys = at.(anim, ts)
 
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
-xlabel("t")
-ylabel("animation value")
+xlabel("t") # hide
+ylabel("animation value") # hide
 tight_layout() # hide
 savefig("example_n_keyword.svg"); nothing # hide
 ```
@@ -240,8 +240,8 @@ ys = at.(anim, ts)
 
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
-xlabel("t")
-ylabel("animation value")
+xlabel("t") # hide
+ylabel("animation value") # hide
 tight_layout() # hide
 savefig("example_yoyo.svg"); nothing # hide
 ```
@@ -280,10 +280,10 @@ ys_odd = at.(anim_odd, ts)
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys_even, label="even")
 plot(ts, ys_odd, label="odd")
-xlabel("t")
-ylabel("animation value")
-axvline(0, 0, 1, color="gray", linestyle="dashed")
-axvline(2, 0, 1, color="gray", linestyle="dashed", label="keyframes")
+xlabel("t") # hide
+ylabel("animation value") # hide
+axvline(0, 0, 1, color="gray", linestyle="dashed") # hide
+axvline(2, 0, 1, color="gray", linestyle="dashed", label="keyframes") # hide
 legend(loc="center", bbox_to_anchor=(1, 0.5), frameon=false) # hide
 tight_layout() # hide
 savefig("example_yoyo_evenodd.svg"); nothing # hide
@@ -312,8 +312,8 @@ ys = at.(anim, ts)
 
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
-xlabel("t")
-ylabel("animation value")
+xlabel("t") # hide
+ylabel("animation value") # hide
 tight_layout() # hide
 savefig("example_prepostwait.svg"); nothing # hide
 ```
@@ -336,8 +336,8 @@ ys = at.(anim, ts)
 
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
-xlabel("t")
-ylabel("animation value")
+xlabel("t") # hide
+ylabel("animation value") # hide
 tight_layout() # hide
 savefig("example_prepostwait_yoyo.svg"); nothing # hide
 ```
@@ -399,8 +399,8 @@ required as the content for (finite) Loops and Sequences
 
 You can turn a FiniteLengthAnimation into a loop like this:
 
-```julia
-a = Animation(
+```@example 1
+anim = Animation(
     0,   1,
     sineio(),
     0.5, 2,
@@ -411,14 +411,26 @@ a = Animation(
 start = 0
 gap = 1
 repetitions = 3
-l = Loop(a, start, gap, repetitions)
+loop = Loop(anim, start, gap, repetitions)
+
+ts = 0:0.01:6
+ys = at.(loop, ts)
+
+figure(figsize=(4, 2.5)) # hide
+plot(ts, ys)
+xlabel("t") # hide
+ylabel("animation value") # hide
+tight_layout() # hide
+savefig("example_loop.svg"); nothing # hide
 ```
+
+![](example_loop.svg)
 
 ## Sequences
 
 You can string together FiniteLengthAnimations into sequences like this:
 
-```julia
+```@example 1
 anim1 = Animation(
     0,   1,
     sineio(),
@@ -430,7 +442,7 @@ anim1 = Animation(
 anim2 = Animation(
     0,   1,
     saccadic(2),
-    0.5, 5,
+    0.5, 3,
     expout(3),
     1,   1
 )
@@ -440,4 +452,16 @@ loop = Loop(anim2, 0, 0.5, 3)
 start = 0
 gap = 1
 sequence = Sequence([anim1, loop], start, gap)
+
+ts = 0:0.01:6
+ys = at.(sequence, ts)
+
+figure(figsize=(4, 2.5)) # hide
+plot(ts, ys)
+xlabel("t") # hide
+ylabel("animation value") # hide
+tight_layout() # hide
+savefig("example_sequence.svg"); nothing # hide
 ```
+
+![](example_sequence.svg)
