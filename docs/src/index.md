@@ -6,25 +6,35 @@
 ```@eval
 using PyCall
 using PyPlot # to hide the console output from first use
-datapath = PyPlot.matplotlib.get_data_path()
-mplfontpath = joinpath(datapath, "fonts/ttf")
-if !isdir(mplfontpath)
-    println("Creating $mplfontpath")
-    mkdir(mplfontpath)
-else
-    println("$mplfontpath already exists")
-end
+# datapath = PyPlot.matplotlib.get_data_path()
+# mplfontpath = joinpath(datapath, "fonts/ttf")
+# if !isdir(mplfontpath)
+#     println("Creating $mplfontpath")
+#     mkdir(mplfontpath)
+# else
+#     println("$mplfontpath already exists")
+# end
+#
+fontpath = "fonts"
+# for file in readdir(fontpath)
+#     if splitext(file)[2] == ".ttf"
+#         cp(joinpath(fontpath, file), joinpath(mplfontpath, file), force=true)
+#         println("Copied $file to matplotlib font folder.")
+#     end
+# end
+#
+# println("Rebuilding font cache.")
 
-fontpath = joinpath(pwd(), "fonts")
-for file in readdir(fontpath)
-    if splitext(file)[2] == ".ttf"
-        cp(joinpath(fontpath, file), joinpath(mplfontpath, file), force=true)
-        println("Copied $file to matplotlib font folder.")
-    end
-end
+font_manager = PyPlot.matplotlib.font_manager
+font_files = font_manager.findSystemFonts(fontpaths=[fontpath])
+font_list = font_manager.createFontList(font_files)
+py"""
+import matplotlib.font_manager as font_manager
+font_manager.fontManager.ttflist.extend($font_list)
+"""
 
-println("Rebuilding font cache.")
-PyPlot.matplotlib.font_manager._rebuild()
+# PyPlot.matplotlib.font_manager._rebuild()
+
 PyPlot.matplotlib.rc_file("matplotlibrc")
 ```
 
