@@ -6,86 +6,12 @@ anim = Animation(
     1, 2, # t = 1, value = 2
     linear(),
     2, 3  # t = 2, value = 3
-)</code></pre><pre><code class="language-none">[ Info: Installing matplotlib via the Conda matplotlib package...
-[ Info: Running `conda install -q -y matplotlib` in root environment
-Collecting package metadata (current_repodata.json): ...working... done
-Solving environment: ...working... done
-
-## Package Plan ##
-
-  environment location: /home/travis/.julia/conda/3
-
-  added / updated specs:
-    - matplotlib
-
-
-The following packages will be downloaded:
-
-    package                    |            build
-    ---------------------------|-----------------
-    cycler-0.10.0              |           py37_0          13 KB
-    dbus-1.13.6                |       h746ee38_0         499 KB
-    expat-2.2.6                |       he6710b0_0         146 KB
-    fontconfig-2.13.0          |       h9420a91_0         227 KB
-    freetype-2.9.1             |       h8a8886c_1         550 KB
-    glib-2.56.2                |       hd408876_0         3.9 MB
-    gst-plugins-base-1.14.0    |       hbbd80ab_1         4.8 MB
-    gstreamer-1.14.0           |       hb453b48_1         3.1 MB
-    icu-58.2                   |       h9c2bf20_1        10.3 MB
-    jpeg-9b                    |       h024ee3a_2         214 KB
-    kiwisolver-1.1.0           |   py37he6710b0_0          82 KB
-    libpng-1.6.37              |       hbc83047_0         278 KB
-    libuuid-1.0.3              |       h1bed415_2          15 KB
-    libxcb-1.13                |       h1bed415_1         421 KB
-    libxml2-2.9.9              |       hea5a465_1         1.6 MB
-    matplotlib-3.1.1           |   py37h5429711_0         5.0 MB
-    pcre-8.43                  |       he6710b0_0         209 KB
-    pyparsing-2.4.2            |             py_0          61 KB
-    pyqt-5.9.2                 |   py37h05f1152_2         4.5 MB
-    python-dateutil-2.8.0      |           py37_0         266 KB
-    pytz-2019.3                |             py_0         231 KB
-    qt-5.9.7                   |       h5867ecd_1        68.5 MB
-    sip-4.19.8                 |   py37hf484d3e_0         274 KB
-    tornado-6.0.3              |   py37h7b6447c_0         584 KB
-    ------------------------------------------------------------
-                                           Total:       105.6 MB
-
-The following NEW packages will be INSTALLED:
-
-  cycler             pkgs/main/linux-64::cycler-0.10.0-py37_0
-  dbus               pkgs/main/linux-64::dbus-1.13.6-h746ee38_0
-  expat              pkgs/main/linux-64::expat-2.2.6-he6710b0_0
-  fontconfig         pkgs/main/linux-64::fontconfig-2.13.0-h9420a91_0
-  freetype           pkgs/main/linux-64::freetype-2.9.1-h8a8886c_1
-  glib               pkgs/main/linux-64::glib-2.56.2-hd408876_0
-  gst-plugins-base   pkgs/main/linux-64::gst-plugins-base-1.14.0-hbbd80ab_1
-  gstreamer          pkgs/main/linux-64::gstreamer-1.14.0-hb453b48_1
-  icu                pkgs/main/linux-64::icu-58.2-h9c2bf20_1
-  jpeg               pkgs/main/linux-64::jpeg-9b-h024ee3a_2
-  kiwisolver         pkgs/main/linux-64::kiwisolver-1.1.0-py37he6710b0_0
-  libpng             pkgs/main/linux-64::libpng-1.6.37-hbc83047_0
-  libuuid            pkgs/main/linux-64::libuuid-1.0.3-h1bed415_2
-  libxcb             pkgs/main/linux-64::libxcb-1.13-h1bed415_1
-  libxml2            pkgs/main/linux-64::libxml2-2.9.9-hea5a465_1
-  matplotlib         pkgs/main/linux-64::matplotlib-3.1.1-py37h5429711_0
-  pcre               pkgs/main/linux-64::pcre-8.43-he6710b0_0
-  pyparsing          pkgs/main/noarch::pyparsing-2.4.2-py_0
-  pyqt               pkgs/main/linux-64::pyqt-5.9.2-py37h05f1152_2
-  python-dateutil    pkgs/main/linux-64::python-dateutil-2.8.0-py37_0
-  pytz               pkgs/main/noarch::pytz-2019.3-py_0
-  qt                 pkgs/main/linux-64::qt-5.9.7-h5867ecd_1
-  sip                pkgs/main/linux-64::sip-4.19.8-py37hf484d3e_0
-  tornado            pkgs/main/linux-64::tornado-6.0.3-py37h7b6447c_0
-
-
-Preparing transaction: ...working... done
-Verifying transaction: ...working... done
-Executing transaction: ...working... done</code></pre><p>Because we are just interpolating numbers, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-julia">ts = 0:0.01:2
+)</code></pre><p>Because we are just interpolating numbers, we can plot them to visualize what the result of the animation is. To get the value of the animation at some time <code>t</code> we use the <code>at()</code> function.</p><pre><code class="language-julia">ts = 0:0.01:2
 ys = at.(anim, ts)
 
 plot(ts, ys)
 xlabel(&quot;t&quot;)
-ylabel(&quot;animation value&quot;)</code></pre><pre><code class="language-none">findfont: Font family [&#39;Arial&#39;] not found. Falling back to DejaVu Sans.</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
+ylabel(&quot;animation value&quot;)</code></pre><p><img src="example_1.svg" alt/></p><p>Another way to write this is with vectors for timestamps and values. (Note that the first version is often easier to understand if you have many timestamps or if the values are longer, so timestamps and values are not visually aligned anymore). Here&#39;s an example of the vector syntax:</p><pre><code class="language-julia">anim = Animation(
     [0, 2, 3],
     [0, 10, 20],
     [sineio(), linear()],
