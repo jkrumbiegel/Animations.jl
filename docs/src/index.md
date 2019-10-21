@@ -143,7 +143,9 @@ function easingplots()
     cols = 3
     rows = Int(ceil(n / cols))
 
-    fig, axes = subplots(rows, cols, figsize=(5, rows/3*4), constrained_layout=true)
+    width = 7
+    height = rows * 1.8
+    fig, axes = subplots(rows, cols, figsize=(width, height), constrained_layout=true)
 
     xx = 0:0.005:1
 
