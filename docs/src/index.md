@@ -146,8 +146,29 @@ using Animations
 
 function easingplots()
 
-    efuncs = [noease, stepease, linear, sineio, saccadic, expin, expout, polyin, polyout]
-    params = [[nothing], [0.25, 0.5, 0.75], [nothing], [nothing], [1, 2, 4], [0.2, 2, 8], [0.2, 2, 8], [2, 3, 6], [2, 3, 6]]
+    efuncs = [
+        noease,
+        stepease,
+        linear,
+        sineio,
+        saccadic,
+        expin,
+        expout,
+        polyin,
+        polyout,
+        polyio]
+
+    params = [
+        [nothing],
+        [0.25, 0.5, 0.75],
+        [nothing],
+        [nothing],
+        [1, 2, 4],
+        [0.2, 2, 8],
+        [0.2, 2, 8],
+        [2, 3, 6],
+        [2, 3, 6],
+        [2, 3, 6]]
 
     n = length(efuncs)
     cols = 3
@@ -159,10 +180,13 @@ function easingplots()
 
     xx = 0:0.005:1
 
+    for a in axes
+        a.axis("off")
+    end
+
     for (i, (ef, ps)) in enumerate(zip(efuncs, params))
 
         a = axes[(divrem(i - 1, cols) .+ (1, 1))...]
-        a.axis("off")
 
         a.plot([-0.25, 0], [0, 0], color=(0.5, 0.5, 0.5), linestyle="dotted")
         a.plot([1, 1.25], [1, 1], color=(0.5, 0.5, 0.5), linestyle="dotted")

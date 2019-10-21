@@ -92,6 +92,12 @@ polyin(power; kwargs...) = funcease(f_polyin, power; kwargs...)
 
 polyout(power; kwargs...) = funcease(opposite(f_polyin), power; kwargs...)
 
+f_polyio(fraction, power) = (
+    fraction < 0.5 ?
+    f_polyin(2 * fraction, power) / 2 :
+    opposite(f_polyin)(2 * (fraction - 0.5), power) / 2 + 0.5)
+polyio(power; kwargs...) = funcease(f_polyio, power; kwargs...)
+
 f_expin(fraction, exponent) = ((exponent ^ fraction) - 1) / (exponent - 1)
 expin(exponent; kwargs...) = funcease(f_expin, exponent; kwargs...)
 
