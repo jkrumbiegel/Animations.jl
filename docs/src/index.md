@@ -3,6 +3,31 @@
 ```@contents
 ```
 
+```@eval
+using PyCall
+using PyPlot # to hide the console output from first use
+datapath = PyPlot.matplotlib.get_data_path()
+mplfontpath = joinpath(datapath, "fonts/ttf")
+if !isdir(mplfontpath)
+    println("Creating $mplfontpath")
+    mkdir(mplfontpath)
+else
+    println("$mplfontpath already exists")
+end
+
+fontpath = joinpath(pwd(), "fonts")
+for file in readdir(fontpath)
+    if splitext(file)[2] == ".ttf"
+        cp(joinpath(fontpath, file), joinpath(mplfontpath, file), force=true)
+        println("Copied $file to matplotlib font folder.")
+    end
+end
+
+println("Rebuilding font cache.")
+PyPlot.matplotlib.font_manager._rebuild()
+PyPlot.matplotlib.rc_file("matplotlibrc")
+```
+
 Animations.jl offers an easy way to set up simple animations where multiple keyframes
 are interpolated between in sequence. You can choose different easing functions or
 create your own. Keyframe values can be anything that can be linearly interpolated, you
@@ -43,7 +68,6 @@ use the `at()` function.
 ts = 0:0.01:2
 ys = at.(anim, ts)
 
-rc("font", size = 10, family = "Arial") # hide
 figure(figsize=(4, 2.5)) # hide
 plot(ts, ys)
 xlabel("t")
@@ -118,8 +142,6 @@ function easingplots()
     n = length(efuncs)
     cols = 3
     rows = Int(ceil(n / cols))
-
-    rc("font", size = 10, family = "Arial")
 
     fig, axes = subplots(rows, cols, figsize=(5, rows/3*4), constrained_layout=true)
 
