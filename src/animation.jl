@@ -125,19 +125,23 @@ function at(a::Animation{T}, t::Real)::T where {T}
     # t in between (except when t is before the first or after the last keyframe)
     i_first_after_t = findfirst(kf -> kf.t >= t, a.frames)
 
-    if isnothing(i_first_after_t)
+    result = if isnothing(i_first_after_t)
         # t lies after the last keyframe
-        # return a.frames[end].value
-        return interpolate(a.easings[end], t, a.frames[end-1], a.frames[end])
+        interpolate(a.easings[end], t, a.frames[end-1], a.frames[end])
     elseif i_first_after_t == 1
         # t lies before the first keyframe
-        # return a.frames[1].value
-        return interpolate(a.easings[1], t, a.frames[1], a.frames[2])
+        interpolate(a.easings[1], t, a.frames[1], a.frames[2])
     else
         # t lies between two keyframes
         i_from = i_first_after_t - 1
         i_to = i_first_after_t
-        return interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
+        interpolate(a.easings[i_from], t, a.frames[i_from], a.frames[i_to])
+    end
+
+    try
+        convert(T, result)
+    catch
+        error("Interpolation result for t = $t of Animation{$T} could not be converted to $T from $(typeof(result)).\nConsider changing the parametric type of the animation to $(typeof(result)).")
     end
 end
 
