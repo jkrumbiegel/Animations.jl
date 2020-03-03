@@ -3,7 +3,7 @@ abstract type FiniteLengthAnimation{T} end
 Base.Broadcast.broadcastable(f::FiniteLengthAnimation) = Ref(f)
 
 """
-`Animation{T}`
+    Animation{T}
 
 An Animation that contains a `Vector` of `Keyframe`s and a `Vector` of `Easing`s
 """
@@ -33,7 +33,7 @@ function Animation(differenttype_kfs::Vector{Keyframe}, easings::Vector{Easing})
 end
 
 """
-`Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T`
+    Animation(kfs::Vector{Keyframe{T}}, easing::Easing) where T
 
 Create an `Animation` from a `Vector` of `Keyframe`s and one `Easing` that is repeated
 for every pair of keyframes.
