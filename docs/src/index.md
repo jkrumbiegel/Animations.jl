@@ -63,9 +63,9 @@ using Animations
 anim = Animation(
     0, 1.0, # t = 0, value = 1
     sineio(),
-    1, 2,   # t = 1, value = 2
+    1, 2.0,   # t = 1, value = 2
     linear(),
-    2, 3    # t = 2, value = 3
+    2, 3.0    # t = 2, value = 3
 )
 nothing  # hide
 ```
