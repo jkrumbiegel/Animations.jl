@@ -61,11 +61,11 @@ linear easing.
 using PyPlot # hide
 using Animations
 anim = Animation(
-    0, 1, # t = 0, value = 1
+    0, 1.0, # t = 0, value = 1
     sineio(),
-    1, 2, # t = 1, value = 2
+    1, 2,   # t = 1, value = 2
     linear(),
-    2, 3  # t = 2, value = 3
+    2, 3    # t = 2, value = 3
 )
 nothing  # hide
 ```
@@ -96,10 +96,16 @@ of the vector syntax:
 ```julia
 anim = Animation(
     [0, 2, 3],
-    [0, 10, 20],
+    [0.0, 10.0, 20.0],
     [sineio(), linear()],
 )
 ```
+
+!!! note
+
+    The keyframe values are specified as `Float64` literals here and not `Int`s.
+    That is because an `Animation{T}` always has to return values of type `T` and
+    if `T` is `Int` you get `InexactError`s in most cases after interpolation.
 
 Instead of using `at()`, you can also get an animation's value for a specific t by calling it:
 
@@ -113,11 +119,11 @@ keyword like so:
 
 ```julia
 anim = Animation(
-    0, 1, # t = 0, value = 1
+    0, 1.0,  # t = 0, value = 1
     # no easing specified
-    1, 2, # t = 1, value = 2
+    1, 2.0,  # t = 1, value = 2
     # no easing specified
-    2, 3;  # t = 2, value = 3
+    2, 3.0;  # t = 2, value = 3
     defaulteasing = sineio()
 )
 ```
@@ -129,7 +135,7 @@ example in vector syntax:
 ```julia
 anim = Animation(
     [0, 1, 2],
-    [1, 2, 3],
+    [1.0, 2.0, 3.0],
     sineio() # note the single easing instead of a vector
 )
 ```
@@ -227,9 +233,9 @@ Use the `n` keyword for repeats:
 ```@example 1
 
 anim = Animation(
-    0, 0,
+    0, 0.0,
     linear(n=3),
-    2, 1
+    2, 1.0
 )
 
 ts = 0:0.01:2
@@ -254,9 +260,9 @@ That's what the `yoyo` parameter is for:
 ```@example 1
 
 anim = Animation(
-    0, 0,
+    0, 0.0,
     linear(n=3, yoyo=true),
-    2, 1
+    2, 1.0
 )
 
 ts = 0:0.01:2
@@ -286,15 +292,15 @@ with looping animations. See the difference here:
 ```@example 1
 
 anim_even = Animation(
-    0, 0,
+    0, 0.0,
     linear(n=4, yoyo=true),
-    2, 1
+    2, 1.0
 )
 
 anim_odd = Animation(
-    0, 0,
+    0, 0.0,
     linear(n=3, yoyo=true),
-    2, 1
+    2, 1.0
 )
 
 ts = -0.5:0.01:3
@@ -326,9 +332,9 @@ an example:
 ```@example 1
 
 anim = Animation(
-    0, 0,
+    0, 0.0,
     linear(prewait=0.1, postwait=0.3),
-    2, 1
+    2, 1.0
 )
 
 ts = 0:0.01:2
@@ -350,9 +356,9 @@ by the number of repeats:
 ```@example 1
 
 anim = Animation(
-    0, 0,
+    0, 0.0,
     linear(prewait=0.1, postwait=0.3, n=2, yoyo=true),
-    2, 1
+    2, 1.0
 )
 
 ts = 0:0.01:2
@@ -404,11 +410,11 @@ a timestamp relative to the previous one, like so:
 
 ```julia
 Animation(
-    0,        1,
-    rel(1),   2,
-    rel(3),   3,
-    rel(0.2), 0,
-    rel(0.4), 1
+    0,        1.0,
+    rel(1),   2.0,
+    rel(3),   3.0,
+    rel(0.2), 0.0,
+    rel(0.4), 1.0
 )
 ```
 
@@ -425,11 +431,11 @@ You can turn a FiniteLengthAnimation into a loop like this:
 
 ```@example 1
 anim = Animation(
-    0,   1,
+    0,   1.0,
     sineio(),
-    0.5, 2,
+    0.5, 2.0,
     polyin(3),
-    1,   1
+    1,   1.0
 )
 
 start = 0
@@ -456,19 +462,19 @@ You can string together FiniteLengthAnimations into sequences like this:
 
 ```@example 1
 anim1 = Animation(
-    0,   1,
+    0,   1.0,
     sineio(),
-    0.5, 2,
+    0.5, 2.0,
     polyin(3),
-    1,   1
+    1,   1.0
 )
 
 anim2 = Animation(
-    0,   1,
+    0,   1.0,
     saccadic(2),
-    0.5, 3,
+    0.5, 3.0,
     expout(3),
-    1,   1
+    1,   1.0
 )
 
 loop = Loop(anim2, 0, 0.5, 3)
