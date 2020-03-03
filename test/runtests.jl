@@ -242,3 +242,38 @@ end
     @test sequence(6) == 0.0
     @test sequence(7) == 0.0
 end
+
+
+@testset "animate_async" begin
+
+    anim = Animation([0, 2], [5.0, 10.0])
+
+    loopanim = Animation(
+        0, 4.0,
+        sineio(n=2, yoyo=true),
+        2, 9.0
+    )
+    loop = Loop(loopanim, 0, 1, 2)
+
+    anim1 = Animation(
+        0, 3.0,
+        1, 1.0,
+    )
+    anim2 = Animation(
+        0, 1.0,
+        1, 8.0
+    )
+    sequence = Sequence([anim1, anim2], 1, 1)
+
+    vals = [0.0, 0.0, 0.0]
+    last_t = Ref(0.0)
+    animate_async(anim, loop, sequence; duration = 0.1, fps = 30) do t, an, lo, se
+        last_t[] = t
+        vals[1] = an
+        vals[2] = lo
+        vals[3] = se
+    end |> wait
+
+    t = last_t[]
+    @test vals == [anim(t), loop(t), sequence(t)]
+end

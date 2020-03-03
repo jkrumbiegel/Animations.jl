@@ -38,11 +38,15 @@ export Loop
 # sequence.jl
 export Sequence
 
+# animate_async.jl
+export animate_async
+
 include("easings.jl")
 include("keyframes.jl")
 include("animation.jl")
 include("interpolation.jl")
 include("loop.jl")
 include("sequence.jl")
+include("animate_async.jl")
 
 end
