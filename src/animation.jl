@@ -120,7 +120,7 @@ timestamps(a::Animation) = [kf.t for kf in a.frames]
 keyframes(a::Animation) = a.frames
 keyvalues(a::Animation) = [kf.value for kf in a.frames]
 
-function at(a::Animation, t::Real)
+function at(a::Animation{T}, t::Real)::T where {T}
     # the first keyframe with a higher time is the second one of the two with
     # t in between (except when t is before the first or after the last keyframe)
     i_first_after_t = findfirst(kf -> kf.t >= t, a.frames)

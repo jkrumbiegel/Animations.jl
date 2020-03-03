@@ -8,7 +8,7 @@ function Sequence(animations::Vector{<:FiniteLengthAnimation{T}}, start::Real, g
     Sequence(animations, convert(Float64, start), Float64[gap for _ in 1:length(animations) - 1])
 end
 
-function at(s::Sequence, t::Real)
+function at(s::Sequence{T}, t::Real)::T where {T}
     durations = duration.(s.animations)
     d = duration(s)
     boundaries = [s.start; s.start .+ durations[1:end-1] .+ s.gaps; s.start + d]

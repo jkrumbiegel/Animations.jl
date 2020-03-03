@@ -23,7 +23,7 @@ struct Loop{T} <: FiniteLengthAnimation{T}
 end
 
 
-function at(l::Loop, t::Real)
+function at(l::Loop{T}, t::Real)::T where {T}
     s = stop(l.animation)
     duration_gapped = s + l.gap
 
