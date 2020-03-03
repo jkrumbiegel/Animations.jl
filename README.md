@@ -14,6 +14,17 @@ delays, so that looping animations are simpler to create.
 
 Check out the [documentation here](https://jkrumbiegel.github.io/Animations.jl/dev)!
 
+
+```julia
+x = Animation([0, duration], [1.0, 0.0], polyout(2; n=8, yoyo=true))
+y = Animation([0, duration], [0.0, 1.0], linear(n=2, yoyo=true))
+
+color = Animation(
+    [0, 0.25, 0.5, 0.75] .* duration,
+    [RGB(0.251, 0.388, 0.847), RGB(0.22, 0.596, 0.149), RGB(0.584, 0.345, 0.698), RGB(0.796, 0.235, 0.2)],
+    noease())
+```
+
 <p align="center">
     <a href="https://github.com/jkrumbiegel/Animations.jl/blob/master/misc/example.jl">
         <img src="https://raw.githubusercontent.com/jkrumbiegel/Animations.jl/master/misc/example.gif">
