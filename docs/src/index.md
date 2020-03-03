@@ -489,3 +489,17 @@ savefig("example_sequence.svg"); nothing # hide
 ```
 
 ![](example_sequence.svg)
+
+## Async animations
+
+If you want to run animations live, e.g. in an interactive plotting context, you
+can use `animate_async`. You supply a variable number of animations, loops and
+sequences and a function. This function is called with the current time of the
+animation (starting at zero) and the evaluated result of each animation at that
+time.
+
+```julia
+animate_async(an_animation, a_sequence, a_loop) do t, v_anim, v_seq, v_loop
+    # do something with the animation values here, like updating a plot
+end
+```
