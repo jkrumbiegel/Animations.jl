@@ -512,6 +512,6 @@ end
 
 The return value of `animate_async` is an `AnimationTask` which just wraps a normal
 `Task` and a flag for signalling that the task should be stopped. You can send the stop
-signal by by calling `stop(animationtask)`. It can not be guaranteed, though, that the task
+signal by calling `stop(animationtask)`. It can not be guaranteed, though, that the task
 really stops (if it's stuck in some endless computation, for example, and doesn't reach the
 next loop).
