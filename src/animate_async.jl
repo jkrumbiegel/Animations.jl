@@ -76,3 +76,5 @@ exit, it won't kill a task that is stuck. You can manipulate the `Task` stored
 in the `AnimationTask` directly if you need more control.
 """
 stop(at::AnimationTask) = at.interrupt_switch[] = true
+
+Base.wait(at::AnimationTask) = wait(at.task)
