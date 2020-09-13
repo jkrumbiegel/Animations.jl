@@ -276,4 +276,16 @@ end
 
     t = last_t[]
     @test vals == [anim(t), loop(t), sequence(t)]
+
+    starttime = time()
+    timeref = Ref(time())
+    # start long loop to then stop it prematurely
+    animtask = animate_async(Loop(anim, 0, 0, 1000); duration = 5) do t, lo
+        timeref[] = time()
+    end
+    stop(animtask)
+    # give the task the opportunity to keep running
+    sleep(0.5)
+
+    @test timeref[] - starttime < 0.1 # stupid way to test that the loop didn't run much after stopping
 end

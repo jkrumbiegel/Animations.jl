@@ -39,7 +39,7 @@ export Loop
 export Sequence
 
 # animate_async.jl
-export animate_async
+export animate_async, stop
 
 include("easings.jl")
 include("keyframes.jl")
