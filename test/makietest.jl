@@ -83,9 +83,9 @@ function test()
     translate!(lines!(scene, [0, width], [1, 1])[end], (0, 0, -1))
 
     timestamp = Node("0")
-    text!(scene, timestamp, position=Point2f0(width / 2, 1.2), align = (:center,  :center), textsize = 0.4)
+    text!(scene, timestamp, position=Point2f(width / 2, 1.2), align = (:center,  :center), textsize = 0.4)
 
-    text!(scene, text_animation.obs, position=Point2f0(width / 2, 0.5), align = (:center,  :center), textsize = 0.4)
+    text!(scene, text_animation.obs, position=Point2f(width / 2, 0.5), align = (:center,  :center), textsize = 0.4)
 
     record(scene, "test.gif", -1:1/25:4; framerate=25) do t
         Animations.update!.(animations, t)
